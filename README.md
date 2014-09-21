@@ -1,2 +1,2 @@
 # H for Hadoop
-_*Coming soon!*_
+_Coming soon!_
