@@ -1,0 +1,7 @@
+# Eclipse
+.project
+.settings
+
+# Jet Brains IDE
+.idea
+
