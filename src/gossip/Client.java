@@ -114,7 +114,7 @@ public class Client implements NotificationListener {
 	private ArrayList<String> parseStartupMembers() {
 		
 		ArrayList<String> startupHostsList = new ArrayList<String>();
-		File startupConfig = new File("./res/startup_members");
+		File startupConfig = new File("./res/startup_members.txt");
 
 		try {
 			@SuppressWarnings("resource")
