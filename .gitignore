@@ -5,3 +5,5 @@ bin
 # Mac hidden file
 .DS_Store
 
+# JetBrains IDE's
+.idea
