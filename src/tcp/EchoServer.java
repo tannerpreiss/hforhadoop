@@ -1,4 +1,4 @@
-package echo;
+package tcp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
