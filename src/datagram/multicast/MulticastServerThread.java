@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class MulticastServerThread extends QuoteServerThread {
 
-  private long FIVE_SECONDS = 5000;
+  private long FIVE_SECONDS = 2000;
 
   public MulticastServerThread() throws IOException {
     super("MulticastServerThread");
