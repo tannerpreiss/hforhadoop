@@ -8,9 +8,9 @@ import java.util.logging.Logger;
 /**
  * Created by Rich on 10/22/14.
  */
-public class ClientThread {
+public class ConnectorThread {
 
-    public ClientThread()
+    public ConnectorThread()
     {
 
     }
