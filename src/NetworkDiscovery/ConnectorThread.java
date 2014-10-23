@@ -8,14 +8,14 @@ import java.util.logging.Logger;
 /**
  * Created by Rich on 10/22/14.
  */
-public class ConnectorThread {
+public class ConnectorThread implements Runnable {
 
-    public ConnectorThread()
-    {
-
+    @Override
+    public void run() {
+        broadcast();
     }
 
-    public void broadcast()
+    private void broadcast()
     {
         // Find the server using UDP broadcast
         try {

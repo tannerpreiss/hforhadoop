@@ -7,6 +7,10 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/*
+ *  This is the code which a "server" shall execute. It listens for people (clients)
+ *  to connect.
+ */
 public class DiscoveryThread implements Runnable {
 
     DatagramSocket socket;
