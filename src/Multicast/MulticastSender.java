@@ -26,26 +26,18 @@ public class MulticastSender implements Runnable {
             DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(),
                     group, 6789);
 
-/*          int x = 0;
+            System.out.println("Sender: starting to send!");
+            int x = 0;
             while (x < 10)
             {
                 s.send(hi);
                 Thread.sleep(3000);
                 x++;
-                System.out.println("Sent x = " + x);
-            }
-*/
-            // get their responses!
-            byte[] buf = new byte[1000];
-            while (true)
-            {
-                DatagramPacket recv = new DatagramPacket(buf, buf.length);
-                s.receive(recv);
-                System.out.println("Recieved: " + buf.toString());
+                System.out.println("Sender: Sent x = " + x);
             }
 
             // OK, I'm done talking - leave the group...
-            // s.leaveGroup(group);
+            s.leaveGroup(group);
         }
         catch (Exception e)
         {

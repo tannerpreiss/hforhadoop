@@ -1,11 +1,15 @@
 package Multicast;
 
 import java.net.*;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * Created by Rich on 10/26/14.
  */
 public class MulticastReciever implements Runnable {
+
+    private String networkInterfaceName;
 
     @Override
     public void run()
@@ -17,7 +21,7 @@ public class MulticastReciever implements Runnable {
 
             group = InetAddress.getByName("228.5.6.7");
 
-            NetworkInterface networkInterface = NetworkInterface.getByName("en1");
+            NetworkInterface networkInterface = NetworkInterface.getByName(networkInterfaceName);
             InetSocketAddress address = new InetSocketAddress(group, 6789);
 
             MulticastSocket s = new MulticastSocket(6789);
@@ -29,7 +33,7 @@ public class MulticastReciever implements Runnable {
             {
                 DatagramPacket recv = new DatagramPacket(buf, buf.length);
                 s.receive(recv);
-                System.out.println("Recieved: " + buf.toString());
+                System.out.println("src: " + recv.getAddress().toString() + " contents: " + new String(buf));
             }
 
             // OK, I'm done talking - leave the group...
@@ -39,5 +43,10 @@ public class MulticastReciever implements Runnable {
         {
             e.printStackTrace();
         }
+    }
+
+    public MulticastReciever(String networkIterfaceName)
+    {
+        this.networkInterfaceName = networkIterfaceName;
     }
 }
