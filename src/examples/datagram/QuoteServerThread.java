@@ -1,4 +1,4 @@
-package datagram;
+package examples.datagram;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

@@ -1,8 +1,8 @@
 
 
-package datagram.multicast;
+package examples.datagram.multicast;
 
-import datagram.QuoteServerThread;
+import examples.datagram.QuoteServerThread;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,6 +12,7 @@ import java.util.Date;
 public class MulticastServerThread extends QuoteServerThread {
 
   private long FIVE_SECONDS = 2000;
+  static final String BCAST_ADDR = "224.0.0.1";
 
   public MulticastServerThread() throws IOException {
     super("MulticastServerThread");
@@ -32,7 +33,7 @@ public class MulticastServerThread extends QuoteServerThread {
         buf = dString.getBytes();
 
         // Send it
-        InetAddress group = InetAddress.getByName("230.0.0.1");
+        InetAddress group = InetAddress.getByName(BCAST_ADDR);
         DatagramPacket packet = new DatagramPacket(buf, buf.length, group, 4446);
         socket.send(packet);
 

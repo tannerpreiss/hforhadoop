@@ -1,4 +1,4 @@
-package datagram.multicast;
+package examples.datagram.multicast;
 
 import java.io.IOException;
 

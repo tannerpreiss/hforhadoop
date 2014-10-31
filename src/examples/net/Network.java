@@ -1,4 +1,4 @@
-package net;
+package examples.net;
 
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
@@ -10,10 +10,10 @@ import java.util.Enumeration;
 
 public class Network {
   public static void main(String args[]) throws SocketException {
-    displayNetworkInterfaces();
-    System.out.printf("###\n\n");
-    displayNetworks();
-    System.out.printf("###\n\n");
+//    displayNetworkInterfaces();
+//    System.out.printf("###\n\n");
+//    displayNetworks();
+//    System.out.printf("###\n\n");
     displayNetworksEx();
   }
 
@@ -61,7 +61,7 @@ public class Network {
   }
 
   static void displayInterfaceInformationEx(NetworkInterface netint) throws SocketException {
-    System.out.printf("Display name: %s\n", netint.getDisplayName());
+    System.out.printf("##\nDisplay name: %s\n", netint.getDisplayName());
     System.out.printf("Name: %s\n", netint.getName());
     Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
 

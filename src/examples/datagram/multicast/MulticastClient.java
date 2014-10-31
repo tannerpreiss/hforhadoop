@@ -1,4 +1,4 @@
-package datagram.multicast;
+package examples.datagram.multicast;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -6,9 +6,12 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 public class MulticastClient {
+
+  static final String BCAST_ADDR = "224.0.0.1";
+
   public static void main (String args[]) throws IOException {
     MulticastSocket socket = new MulticastSocket(4446);
-    InetAddress address = InetAddress.getByName("230.0.0.1");
+    InetAddress address = InetAddress.getByName(BCAST_ADDR);
     socket.joinGroup(address);
 
     DatagramPacket packet;

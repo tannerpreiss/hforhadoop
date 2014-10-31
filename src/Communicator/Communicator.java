@@ -9,6 +9,5 @@ public class Communicator {
     ListManager listManager = new ListManager(multicastListener);
     Thread listThread = new Thread(listManager);
     listThread.start();
-    System.out.println("I am the communicator thread");
   }
 }

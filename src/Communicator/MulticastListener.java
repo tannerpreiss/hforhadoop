@@ -1,7 +1,11 @@
 package Communicator;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Vector;
 
 public class MulticastListener implements Runnable {
@@ -11,12 +15,18 @@ public class MulticastListener implements Runnable {
   static final int SO_TIMEOUT = 1000; // Receive for a maximum of 1 seconds
   private Vector<String> messages = new Vector<String>();
 
+  static final String BCAST_ADDR = "224.0.0.1";
+  static final int PORT = 1691;
+
+  static private PrintStream out = System.out;
+
   @Override
   public void run() {
-    System.out.println("Starting Listener thread");
+    out.println("Starting Listener thread");
     try {
-      MulticastSocket socket = new MulticastSocket(4446);
-      InetAddress address = InetAddress.getByName("230.0.0.1");
+      MulticastSocket socket = new MulticastSocket(PORT);
+
+      InetAddress address = InetAddress.getByName(BCAST_ADDR);
       socket.joinGroup(address);
 
       while (true) {
@@ -33,6 +43,7 @@ public class MulticastListener implements Runnable {
       socket.close();
     } catch (IOException e) {
       System.err.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 
@@ -40,9 +51,9 @@ public class MulticastListener implements Runnable {
       throws InterruptedException {
     // Wait until message queue is not empty
     while (messages.size() == MAX_QUEUE) {
-      System.out.println("Put: Before wait");
+      out.println("Put: Before wait");
       wait();
-      System.out.println("Put: After wait");
+      out.println("Put: After wait");
     }
 
     // Get new message
@@ -56,7 +67,7 @@ public class MulticastListener implements Runnable {
       return true;
     }
     messages.addElement(received);
-    System.out.println("Put message: list size " + messages.size());
+    out.println("Put message: list size " + messages.size());
     notify(); // Notify other threads
     return false;
   }
@@ -74,32 +85,35 @@ public class MulticastListener implements Runnable {
           break;
         } catch (SocketTimeoutException e) {
           System.err.println(e.getMessage());
+          e.printStackTrace();
         } catch (IOException e) {
           System.err.println(e.getMessage());
+          e.printStackTrace();
           break;
         }
         notify();
-        System.out.println("Rec: Before wait");
+        out.println("Rec: Before wait");
         wait(SO_TIMEOUT);
-        System.out.println("Rec: After wait");
+        out.println("Rec: After wait");
       }
 
 
     } catch (SocketException e) {
       System.err.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 
   public synchronized String getMessage() throws InterruptedException {
-    notify();
     while (messages.size() == 0) {
-      System.out.println("Get: Before wait");
+      out.println("Get: Before wait");
       wait();
-      System.out.println("Get: After wait");
+      out.println("Get: After wait");
     }
-    System.out.println("Get message: list size " + messages.size());
+    out.println("Get message: list size " + messages.size());
     String msg = messages.firstElement();
     messages.removeElementAt(0);
+    notify();
     return msg;
   }
 }
