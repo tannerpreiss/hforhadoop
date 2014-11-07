@@ -218,22 +218,17 @@ public class Client implements NotificationListener {
 
 				// --------------------- RECEIVE ON MULTICAST ---------------------
 
-
 				DatagramPacket recv = null;
 				String newNodeIp = "";
-				System.out.println("HIIIIII");
 				try {
 					do {
 						// get their responses!
 						byte[] buf = new byte[1000];
 						recv = new DatagramPacket(buf, buf.length);
-						System.out.println("started to block on receive!");
 
 						multicastServer.receive(recv);
 
 						newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
-						System.out.println(newNodeIp);
-
 					} while (((newNodeIp).equals(myAddress)));
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -242,16 +237,14 @@ public class Client implements NotificationListener {
 
 
 				// ------------------------ ADD IP TO LIST ------------------------
-				// String newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
-				System.out.println("ADDING: " + newNodeIp);
-
 				Member newNode = new Member(newNodeIp, 0, myClient, t_cleanup);
-				System.out.println("Adding new node: " + newNode);
+
         synchronized (Client.this.inGroup) {
           if (!inGroup.get()) {
             inGroup.set(true);
           }
         }
+
         synchronized (Client.this.memberList) {
           if (!Client.this.memberList.contains(newNode)) {
             Client.this.memberList.add(newNode);
@@ -345,7 +338,6 @@ public class Client implements NotificationListener {
       client.send_multicast();
 		}
 
-		System.out.println("IN GROUP!!!!!!!!!");
 		executor.execute(new MembershipGossiper());
 
 		// keep the main thread around
