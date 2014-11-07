@@ -12,8 +12,8 @@ public class Member implements Serializable {
 	 * Similar to the toString in {@link InetSocketAddress}
 	 */
 	private String address;
-
 	private int heartbeat;
+  private boolean me;
 
   // Set timer as transient so that it is not sent across the network.
 	private transient TimeoutTimer timeoutTimer;
@@ -23,6 +23,10 @@ public class Member implements Serializable {
 		this.heartbeat = heartbeat;
 		this.timeoutTimer = new TimeoutTimer(t_cleanup, client, this);
 	}
+
+  public void setAsMe() {
+    me = true;
+  }
 
 	public void startTimeoutTimer() {
 		this.timeoutTimer.start();
@@ -46,7 +50,11 @@ public class Member implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Member [address=" + address + ", heartbeat=" + heartbeat + "]";
+    if (me) {
+      return "Member [address=" + address + ", heartbeat=" + heartbeat + "] ME!";
+    } else {
+      return "Member [address=" + address + ", heartbeat=" + heartbeat + "]";
+    }
 	}
 
 	/* (non-Javadoc)

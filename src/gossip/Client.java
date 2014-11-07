@@ -22,7 +22,7 @@ public class Client implements NotificationListener {
 	private MulticastSocket     multicastServer;
 	private String              myAddress;
 	private Member              me;
-	private Boolean             inGroup;
+	private AtomicBoolean       inGroup;
 	private ExecutorService     executor;
 
     // Globals for IP Communication
@@ -49,7 +49,8 @@ public class Client implements NotificationListener {
 		t_gossip    = 100;                      // .1 second
 		t_cleanup   = 10000;                    // 10 seconds
 		random      = new Random();
-		inGroup     = false;
+//		inGroup     = false;
+    inGroup = new AtomicBoolean(false);
     int port    = 2222;
 
 		NetworkInterface networkInterface;
@@ -78,6 +79,7 @@ public class Client implements NotificationListener {
 		executor = Executors.newCachedThreadPool();
 
 		me = new Member(this.myAddress, 0, this, t_cleanup);
+    me.setAsMe();
 		System.out.println("I am " + me);
 		memberList.add(me);
 	}
@@ -246,10 +248,14 @@ public class Client implements NotificationListener {
 
 				Member newNode = new Member(newNodeIp, 0, myClient, t_cleanup);
 				System.out.println("Adding new node: " + newNode);
-				if (!inGroup) {
-					inGroup = true;
-				}
-				memberList.add(newNode);
+        synchronized (Client.this.inGroup) {
+          if (!inGroup.get()) {
+            inGroup.set(true);
+          }
+        }
+        synchronized (Client.this.memberList) {
+          memberList.add(newNode);
+        }
 			}
 		}
 	}
@@ -264,6 +270,7 @@ public class Client implements NotificationListener {
 	private class AsynchronousGossipReceiver implements Runnable {
 
 		private AtomicBoolean keepRunning;
+    private Client myClient;
 
 		public AsynchronousGossipReceiver() {
 			keepRunning = new AtomicBoolean(true);
@@ -285,18 +292,20 @@ public class Client implements NotificationListener {
 
 					Object readObject = ois.readObject();
 					if(readObject instanceof ArrayList<?>) {
-						inGroup = true;
+//						inGroup = true;
 						ArrayList<Member> list = (ArrayList<Member>) readObject;
 
 						System.out.println("Received member list:");
 						for (Member member : list) {
 							System.out.println(member);
 						}
-						if (!inGroup) {
-							inGroup = true;
-						}
-						// Merge our list with the one we just received
-						mergeLists(list);
+            synchronized (Client.this.inGroup) {
+              if (!inGroup.get()) {
+                inGroup.set(true);
+              }
+            }
+            // Merge our list with the one we just received
+            mergeLists(list);
 					}
 
 				} catch (IOException e) {
@@ -384,8 +393,15 @@ public class Client implements NotificationListener {
 		// AsynchronousMulticastReceiver()
 		executor.execute(new AsynchronousMulticastReceiver(client));
 
-		while (!client.inGroup) {
-			client.send_multicast();
+
+//		while (!client.inGroup.get()) {
+    while (true) {
+			synchronized (Client.this.inGroup) {
+        if (inGroup.get()) {
+          break;
+        }
+      }
+      client.send_multicast();
 		}
 
 		System.out.println("IN GROUP!!!!!!!!!");
@@ -397,19 +413,16 @@ public class Client implements NotificationListener {
 		}
 	}
 
-	private void send_multicast()
-    {
+	private void send_multicast() {
 		// join a Multicast group and send the group salutations
-		try
-        {
-            String msg = "Hello";
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+		try {
+      String msg = "Hello";
+      InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
 			DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, MULTICAST_PORT);
 			multicastServer.send(hi);
 			Thread.sleep(3000);
 		}
-		catch (Exception e)
-        {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
