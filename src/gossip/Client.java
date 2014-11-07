@@ -9,11 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -27,19 +23,12 @@ import javax.management.NotificationListener;
 public class Client implements NotificationListener {
 
 	private ArrayList<Member> memberList;
-
 	private ArrayList<Member> deadList;
-
 	private int t_gossip; //in ms
-
 	public int t_cleanup; //in ms
-
 	private Random random;
-
 	private DatagramSocket server;
-
 	private String myAddress;
-
 	private Member me;
 
 	/**
@@ -60,13 +49,13 @@ public class Client implements NotificationListener {
 
 		deadList = new ArrayList<Member>();
 
-		t_gossip = 100; // 1 second TODO: make configurable
+		t_gossip = 100; // .1 second TODO: make configurable
 
 		t_cleanup = 10000; // 10 seconds TODO: make configurable
 
 		random = new Random();
 
-		int port = 0;
+		int port = 2222;                                                        // ***********************
 
 		String myIpAddress = InetAddress.getLocalHost().getHostAddress();
 		this.myAddress = myIpAddress + ":" + port;
@@ -111,26 +100,117 @@ public class Client implements NotificationListener {
 	 * and port at a newline delimited config file.
 	 * @return List of <IP address:port> Strings
 	 */
-	private ArrayList<String> parseStartupMembers() {
-		
-		ArrayList<String> startupHostsList = new ArrayList<String>();
-		File startupConfig = new File("./res/startup_members.txt");
+	private ArrayList<String> parseStartupMembers() throws UnknownHostException, InterruptedException {
 
-		try {
-			@SuppressWarnings("resource")
-			BufferedReader br = new BufferedReader(new FileReader(startupConfig));
-			String line;
-			while((line = br.readLine()) != null) {
-				startupHostsList.add(line.trim());
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return startupHostsList;
+
+        System.out.println("started method!");
+
+        ArrayList<String> ans = new ArrayList<String>();
+        ans.add(InetAddress.getLocalHost().getHostAddress().toString() + ":2222");
+
+        // ----------------- SEND PACKET TO MULTICAST -----------------
+        String msg = "Hello";
+        NetworkInterface networkInterface;
+        InetSocketAddress address;
+        MulticastSocket s = null;
+        InetAddress group;
+        DatagramPacket hi = null;
+        try {
+            group = InetAddress.getByName("228.5.6.7");
+
+            networkInterface = NetworkInterface.getByName("en1");
+            address = new InetSocketAddress(group, 6789);
+
+            s = new MulticastSocket(6789);
+            s.joinGroup(address, networkInterface);
+            hi = new DatagramPacket(msg.getBytes(), msg.length(),
+                    group, 6789);
+
+            int x = 0;
+            while (x < 10)
+            {
+                s.send(hi);
+                Thread.sleep(100);
+                x++;
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        // ----------------------------------------------------------------
+
+        System.out.println("just sent the packet now waiting for response!");
+
+
+        // --------------------- RECEIVE ON MULTICAST ---------------------
+        DatagramPacket recv = null;
+        String newNodeIp = "";
+        try {
+            do {
+                // get their responses!
+                byte[] buf = new byte[1000];
+                recv = new DatagramPacket(buf, buf.length);
+                System.out.println("started to block on receive!");
+
+                s.receive(recv);
+
+                System.out.println("finally got from:" + recv.getAddress().toString());
+                newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
+                System.out.println(newNodeIp);
+
+            } while (((newNodeIp).equals(myAddress)));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        // ----------------------------------------------------------------
+
+
+        // ------------------------ ADD IP TO LIST ------------------------
+        // String newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
+        System.out.println("ADDING: " + newNodeIp);
+        ans.add(newNodeIp);
+        // ----------------------------------------------------------------
+
+
+        // ------------------------ SEND ACKNOWLEDGMENT ------------------------
+        try {
+            int x = 0;
+            while (x < 10)
+            {
+                s.send(hi);
+                Thread.sleep(100);
+                x++;
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        // ----------------------------------------------------------------
+
+        return ans;
+
+//		ArrayList<String> startupHostsList = new ArrayList<String>();
+//		File startupConfig = new File("./res/startup_members.txt");
+//
+//		try {
+//			@SuppressWarnings("resource")
+//			BufferedReader br = new BufferedReader(new FileReader(startupConfig));
+//			String line;
+//			while((line = br.readLine()) != null) {
+//				startupHostsList.add(line.trim());
+//			}
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return startupHostsList;
 	}
 
 	/**
@@ -348,6 +428,8 @@ public class Client implements NotificationListener {
 			}
 		}
 	}
+
+
 
 	/**
 	 * Starts the client.  Specifically, start the various cycles for this protocol.
