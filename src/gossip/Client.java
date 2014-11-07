@@ -248,6 +248,7 @@ public class Client implements NotificationListener {
         synchronized (Client.this.memberList) {
           if (!Client.this.memberList.contains(newNode)) {
             Client.this.memberList.add(newNode);
+            newNode.startTimeoutTimer();
           }
         }
 			}
