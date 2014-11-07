@@ -1,11 +1,7 @@
 package gossip;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -27,9 +23,13 @@ public class Client implements NotificationListener {
 	private int t_gossip; //in ms
 	public int t_cleanup; //in ms
 	private Random random;
-	private DatagramSocket server;
+	private DatagramSocket gossipServer;
+	private MulticastSocket multicastServer;
 	private String myAddress;
 	private Member me;
+	private Boolean inGroup;
+	// Start the two worker threads
+	private ExecutorService executor;
 
 	/**
 	 * Setup the client's lists, gossiping parameters, and parse the startup config file.
@@ -55,162 +55,40 @@ public class Client implements NotificationListener {
 
 		random = new Random();
 
+		inGroup = false;
+
 		int port = 2222;                                                        // ***********************
+
+		NetworkInterface networkInterface;
+		InetSocketAddress address;
+		InetAddress group;
+		try {
+			group = InetAddress.getByName("228.5.6.7");
+
+			networkInterface = NetworkInterface.getByName("en1");
+			address = new InetSocketAddress(group, 6789);
+
+			multicastServer = new MulticastSocket(6789);
+			multicastServer.joinGroup(address, networkInterface);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
 
 		String myIpAddress = InetAddress.getLocalHost().getHostAddress();
 		this.myAddress = myIpAddress + ":" + port;
 
-		ArrayList<String> startupHostsList = parseStartupMembers();
+		gossipServer = new DatagramSocket(port);
 
-		// loop over the initial hosts, and find ourselves
-		for (String host : startupHostsList) {
+		executor = Executors.newCachedThreadPool();
 
-			Member member = new Member(host, 0, this, t_cleanup);
+		// fArrayList<String> startupHostsList = parseStartupMembers();
 
-			if(host.contains(myIpAddress)) {
-				// save our own Member class so we can increment our heartbeat later
-				me = member;
-				port = Integer.parseInt(host.split(":")[1]);
-				this.myAddress = myIpAddress + ":" + port;
-				System.out.println("I am " + me);
-			}
-			memberList.add(member);
-		}
-
-		System.out.println("Original Member List");
-		System.out.println("---------------------");
-		for (Member member : memberList) {
-			System.out.println(member);
-		}
-
-		if(port != 0) {
-			// TODO: starting the server could probably be moved to the constructor
-			// of the receiver thread.
-			server = new DatagramSocket(port);
-		}
-		else {
-			// This is bad, so no need proceeding on
-			System.err.println("Could not find myself in startup list");
-			System.exit(-1);
-		}
-	}
-
-	/**
-	 * In order to have some membership lists at startup, we read the IP addresses
-	 * and port at a newline delimited config file.
-	 * @return List of <IP address:port> Strings
-	 */
-	private ArrayList<String> parseStartupMembers() throws UnknownHostException, InterruptedException {
-
-
-        System.out.println("started method!");
-
-        ArrayList<String> ans = new ArrayList<String>();
-        ans.add(InetAddress.getLocalHost().getHostAddress().toString() + ":2222");
-
-        // ----------------- SEND PACKET TO MULTICAST -----------------
-        String msg = "Hello";
-        NetworkInterface networkInterface;
-        InetSocketAddress address;
-        MulticastSocket s = null;
-        InetAddress group;
-        DatagramPacket hi = null;
-        try {
-            group = InetAddress.getByName("228.5.6.7");
-
-            networkInterface = NetworkInterface.getByName("en1");
-            address = new InetSocketAddress(group, 6789);
-
-            s = new MulticastSocket(6789);
-            s.joinGroup(address, networkInterface);
-            hi = new DatagramPacket(msg.getBytes(), msg.length(),
-                    group, 6789);
-
-            int x = 0;
-            while (x < 10)
-            {
-                s.send(hi);
-                Thread.sleep(100);
-                x++;
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        // ----------------------------------------------------------------
-
-        System.out.println("just sent the packet now waiting for response!");
-
-
-        // --------------------- RECEIVE ON MULTICAST ---------------------
-        DatagramPacket recv = null;
-        String newNodeIp = "";
-        try {
-            do {
-                // get their responses!
-                byte[] buf = new byte[1000];
-                recv = new DatagramPacket(buf, buf.length);
-                System.out.println("started to block on receive!");
-
-                s.receive(recv);
-
-                System.out.println("finally got from:" + recv.getAddress().toString());
-                newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
-                System.out.println(newNodeIp);
-
-            } while (((newNodeIp).equals(myAddress)));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        // ----------------------------------------------------------------
-
-
-        // ------------------------ ADD IP TO LIST ------------------------
-        // String newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
-        System.out.println("ADDING: " + newNodeIp);
-        ans.add(newNodeIp);
-        // ----------------------------------------------------------------
-
-
-        // ------------------------ SEND ACKNOWLEDGMENT ------------------------
-        try {
-            int x = 0;
-            while (x < 10)
-            {
-                s.send(hi);
-                Thread.sleep(100);
-                x++;
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        // ----------------------------------------------------------------
-
-        return ans;
-
-//		ArrayList<String> startupHostsList = new ArrayList<String>();
-//		File startupConfig = new File("./res/startup_members.txt");
-//
-//		try {
-//			@SuppressWarnings("resource")
-//			BufferedReader br = new BufferedReader(new FileReader(startupConfig));
-//			String line;
-//			while((line = br.readLine()) != null) {
-//				startupHostsList.add(line.trim());
-//			}
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return startupHostsList;
+		me = new Member(this.myAddress, 0, this, t_cleanup);
+		System.out.println("I am " + me);
+		memberList.add(me);
 	}
 
 	/**
@@ -244,7 +122,7 @@ public class Client implements NotificationListener {
 						System.out.println(m);
 					}
 					System.out.println("---------------------");
-					
+
 					//simulate some packet loss ~25%
 					int percentToSend = random.nextInt(100);
 					if(percentToSend > 25) {
@@ -330,11 +208,73 @@ public class Client implements NotificationListener {
 	 * additional information, you will need some logic to determine
 	 * the incoming message.
 	 */
-	private class AsychronousReceiver implements Runnable {
+	private class AsychronousMulticastReceiver implements Runnable {
+
+		private AtomicBoolean keepRunning;
+		private Client myClient;
+
+		public AsychronousMulticastReceiver(Client client) {
+			keepRunning = new AtomicBoolean(true);
+			myClient = client;
+
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void run() {
+			while (keepRunning.get()) {
+
+				// --------------------- RECEIVE ON MULTICAST ---------------------
+
+
+				DatagramPacket recv = null;
+				String newNodeIp = "";
+				System.out.println("HIIIIII");
+				try {
+					do {
+						// get their responses!
+						byte[] buf = new byte[1000];
+						recv = new DatagramPacket(buf, buf.length);
+						System.out.println("started to block on receive!");
+
+						multicastServer.receive(recv);
+
+						newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
+						System.out.println(newNodeIp);
+
+					} while (((newNodeIp).equals(myAddress)));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				// ----------------------------------------------------------------
+
+
+				// ------------------------ ADD IP TO LIST ------------------------
+				// String newNodeIp = recv.getAddress().toString().substring(1) + ":2222";
+				System.out.println("ADDING: " + newNodeIp);
+
+				Member newNode = new Member(newNodeIp, 0, myClient, t_cleanup);
+				System.out.println("Adding new node: " + newNode);
+				if (!inGroup) {
+					inGroup = true;
+				}
+				memberList.add(newNode);
+			}
+		}
+	}
+
+	/**
+	 * This class handles the passive cycle, where this client
+	 * has received an incoming message.  For now, this message
+	 * is always the membership list, but if you choose to gossip
+	 * additional information, you will need some logic to determine
+	 * the incoming message.
+	 */
+	private class AsychronousGossipReceiver implements Runnable {
 
 		private AtomicBoolean keepRunning;
 
-		public AsychronousReceiver() {
+		public AsychronousGossipReceiver() {
 			keepRunning = new AtomicBoolean(true);
 		}
 
@@ -346,8 +286,7 @@ public class Client implements NotificationListener {
 					//XXX: be mindful of this array size for later
 					byte[] buf = new byte[256];
 					DatagramPacket p = new DatagramPacket(buf, buf.length);
-					server.receive(p);
-
+					gossipServer.receive(p);
 					// extract the member arraylist out of the packet
 					// TODO: maybe abstract this out to pass just the bytes needed
 					ByteArrayInputStream bais = new ByteArrayInputStream(p.getData());
@@ -355,11 +294,15 @@ public class Client implements NotificationListener {
 
 					Object readObject = ois.readObject();
 					if(readObject instanceof ArrayList<?>) {
+						inGroup = true;
 						ArrayList<Member> list = (ArrayList<Member>) readObject;
 
 						System.out.println("Received member list:");
 						for (Member member : list) {
 							System.out.println(member);
+						}
+						if (!inGroup) {
+							inGroup = true;
 						}
 						// Merge our list with the one we just received
 						mergeLists(list);
@@ -429,33 +372,33 @@ public class Client implements NotificationListener {
 		}
 	}
 
-
-
 	/**
 	 * Starts the client.  Specifically, start the various cycles for this protocol.
 	 * Start the gossip thread and start the receiver thread.
 	 * @throws InterruptedException
 	 */
-	private void start() throws InterruptedException {
+	private void start_listeners(Client client) throws InterruptedException {
 
 		// Start all timers except for me
 		for (Member member : memberList) {
-			if(member != me) {
+			if (member != me) {
 				member.startTimeoutTimer();
 			}
 		}
 
-		// Start the two worker threads
-		ExecutorService executor = Executors.newCachedThreadPool();
 		//  The receiver thread is a passive player that handles
 		//  merging incoming membership lists from other neighbors.
-		executor.execute(new AsychronousReceiver());
-		//  The gossiper thread is an active player that 
-		//  selects a neighbor to share its membership list
-		executor.execute(new MembershipGossiper());
+		executor.execute(new AsychronousGossipReceiver());
 
-		// Potentially, you could kick off more threads here
-		//  that could perform additional data synching
+		// AsychronousMulticastReceiver()
+		executor.execute(new AsychronousMulticastReceiver(client));
+
+		while (!client.inGroup) {
+			client.send_multicast();
+		}
+
+		System.out.println("IN GROUP!!!!!!!!!");
+		executor.execute(new MembershipGossiper());
 
 		// keep the main thread around
 		while(true) {
@@ -463,10 +406,32 @@ public class Client implements NotificationListener {
 		}
 	}
 
+	private void send_multicast() {
+
+		// join a Multicast group and send the group salutations
+		String msg = "Hello";
+		InetAddress group;
+
+		try {
+
+			group = InetAddress.getByName("228.5.6.7");
+			DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(),
+					group, 6789);
+
+			int x = 0;
+				multicastServer.send(hi);
+				Thread.sleep(3000);
+				x++;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void main(String[] args) throws InterruptedException, SocketException, UnknownHostException {
 
 		Client client = new Client();
-		client.start();
+		client.start_listeners(client);
 	}
 
 	/**
