@@ -46,7 +46,7 @@ public class Client implements NotificationListener {
 
 		memberList  = new ArrayList<Member>();
 		deadList    = new ArrayList<Member>();
-		t_gossip    = 100;                      // .1 second
+		t_gossip    = 1000;                      // .1 second
 		t_cleanup   = 10000;                    // 10 seconds
 		random      = new Random();
     inGroup = new AtomicBoolean(false);
@@ -252,9 +252,11 @@ public class Client implements NotificationListener {
             inGroup.set(true);
           }
         }
-        ArrayList<Member> new_member = new ArrayList<Member>();
-        new_member.add(newNode);
-        mergeLists(new_member);
+        synchronized (Client.this.memberList) {
+          if (!Client.this.memberList.contains(newNode)) {
+            Client.this.memberList.add(newNode);
+          }
+        }
 			}
 		}
 	}
@@ -370,7 +372,7 @@ public class Client implements NotificationListener {
    * Merge remote list (received from peer), and our local member list.
    * Simply, we must update the heartbeats that the remote list has with
    * our list.  Also, some additional logic is needed to make sure we have
-   * not timed out a member and then immediately received a list with that 
+   * not timed out a member and then immediately received a list with that
    * member.
    * @param remoteList
    */
