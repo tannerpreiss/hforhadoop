@@ -1,10 +1,8 @@
 package gossip;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javax.management.Notification;
+import javax.management.NotificationListener;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -13,23 +11,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.management.Notification;
-import javax.management.NotificationListener;
-
 public class Client implements NotificationListener {
 
-	private ArrayList<Member> memberList;
-	private ArrayList<Member> deadList;
-	private int t_gossip; //in ms
-	public int t_cleanup; //in ms
-	private Random random;
-	private DatagramSocket gossipServer;
-	private MulticastSocket multicastServer;
-	private String myAddress;
-	private Member me;
-	private Boolean inGroup;
-	// Start the two worker threads
-	private ExecutorService executor;
+	private ArrayList<Member>   memberList;
+	private ArrayList<Member>   deadList;
+	private int                 t_gossip;   //in ms
+	public  int                 t_cleanup;  //in ms
+	private Random              random;
+	private DatagramSocket      gossipServer;
+	private MulticastSocket     multicastServer;
+	private String              myAddress;
+	private Member              me;
+	private Boolean             inGroup;
+	private ExecutorService     executor;
+
+    // Globals for IP Communication
+    private final int           MULTICAST_PORT      = 6789;
+    private final String        MULTICAST_ADDRESS   = "228.5.6.7";
+    private final String        INTERFACE_NAME      = "en1";
 
 	/**
 	 * Setup the client's lists, gossiping parameters, and parse the startup config file.
@@ -45,30 +44,26 @@ public class Client implements NotificationListener {
 			}
 		}));
 
-		memberList = new ArrayList<Member>();
+		memberList  = new ArrayList<Member>();
+		deadList    = new ArrayList<Member>();
+		t_gossip    = 100;                      // .1 second
+		t_cleanup   = 10000;                    // 10 seconds
+		random      = new Random();
+		inGroup     = false;
 
-		deadList = new ArrayList<Member>();
-
-		t_gossip = 100; // .1 second TODO: make configurable
-
-		t_cleanup = 10000; // 10 seconds TODO: make configurable
-
-		random = new Random();
-
-		inGroup = false;
-
-		int port = 2222;                                                        // ***********************
+        int port    = 2222;
 
 		NetworkInterface networkInterface;
 		InetSocketAddress address;
 		InetAddress group;
-		try {
-			group = InetAddress.getByName("228.5.6.7");
 
-			networkInterface = NetworkInterface.getByName("en1");
-			address = new InetSocketAddress(group, 6789);
+        try {
+			group = InetAddress.getByName(MULTICAST_ADDRESS);
 
-			multicastServer = new MulticastSocket(6789);
+			networkInterface = NetworkInterface.getByName(INTERFACE_NAME);
+			address = new InetSocketAddress(group, MULTICAST_PORT);
+
+			multicastServer = new MulticastSocket(MULTICAST_PORT);
 			multicastServer.joinGroup(address, networkInterface);
 		}
 		catch (Exception e)
@@ -76,15 +71,12 @@ public class Client implements NotificationListener {
 			e.printStackTrace();
 		}
 
-
 		String myIpAddress = InetAddress.getLocalHost().getHostAddress();
 		this.myAddress = myIpAddress + ":" + port;
 
 		gossipServer = new DatagramSocket(port);
 
 		executor = Executors.newCachedThreadPool();
-
-		// fArrayList<String> startupHostsList = parseStartupMembers();
 
 		me = new Member(this.myAddress, 0, this, t_cleanup);
 		System.out.println("I am " + me);
@@ -379,7 +371,7 @@ public class Client implements NotificationListener {
 	 */
 	private void start_listeners(Client client) throws InterruptedException {
 
-		// Start all timers except for me
+        // TODO: this will not run, since in the constructor, all we add is oneself
 		for (Member member : memberList) {
 			if (member != me) {
 				member.startTimeoutTimer();
@@ -406,30 +398,25 @@ public class Client implements NotificationListener {
 		}
 	}
 
-	private void send_multicast() {
-
+	private void send_multicast()
+    {
 		// join a Multicast group and send the group salutations
-		String msg = "Hello";
-		InetAddress group;
-
-		try {
-
-			group = InetAddress.getByName("228.5.6.7");
-			DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(),
-					group, 6789);
-
-			int x = 0;
-				multicastServer.send(hi);
-				Thread.sleep(3000);
-				x++;
+		try
+        {
+            String msg = "Hello";
+            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+			DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, MULTICAST_PORT);
+			multicastServer.send(hi);
+			Thread.sleep(3000);
 		}
-		catch (Exception e) {
+		catch (Exception e)
+        {
 			e.printStackTrace();
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException, SocketException, UnknownHostException {
-
+	public static void main(String[] args) throws InterruptedException, SocketException, UnknownHostException
+    {
 		Client client = new Client();
 		client.start_listeners(client);
 	}
@@ -453,6 +440,5 @@ public class Client implements NotificationListener {
 		synchronized (this.deadList) {
 			this.deadList.add(deadMember);
 		}
-
 	}
 }
