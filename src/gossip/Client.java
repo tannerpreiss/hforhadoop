@@ -50,8 +50,7 @@ public class Client implements NotificationListener {
 		t_cleanup   = 10000;                    // 10 seconds
 		random      = new Random();
 		inGroup     = false;
-
-        int port    = 2222;
+    int port    = 2222;
 
 		NetworkInterface networkInterface;
 		InetSocketAddress address;
@@ -200,12 +199,12 @@ public class Client implements NotificationListener {
 	 * additional information, you will need some logic to determine
 	 * the incoming message.
 	 */
-	private class AsychronousMulticastReceiver implements Runnable {
+	private class AsynchronousMulticastReceiver implements Runnable {
 
 		private AtomicBoolean keepRunning;
 		private Client myClient;
 
-		public AsychronousMulticastReceiver(Client client) {
+		public AsynchronousMulticastReceiver(Client client) {
 			keepRunning = new AtomicBoolean(true);
 			myClient = client;
 
@@ -262,11 +261,11 @@ public class Client implements NotificationListener {
 	 * additional information, you will need some logic to determine
 	 * the incoming message.
 	 */
-	private class AsychronousGossipReceiver implements Runnable {
+	private class AsynchronousGossipReceiver implements Runnable {
 
 		private AtomicBoolean keepRunning;
 
-		public AsychronousGossipReceiver() {
+		public AsynchronousGossipReceiver() {
 			keepRunning = new AtomicBoolean(true);
 		}
 
@@ -380,10 +379,10 @@ public class Client implements NotificationListener {
 
 		//  The receiver thread is a passive player that handles
 		//  merging incoming membership lists from other neighbors.
-		executor.execute(new AsychronousGossipReceiver());
+		executor.execute(new AsynchronousGossipReceiver());
 
-		// AsychronousMulticastReceiver()
-		executor.execute(new AsychronousMulticastReceiver(client));
+		// AsynchronousMulticastReceiver()
+		executor.execute(new AsynchronousMulticastReceiver(client));
 
 		while (!client.inGroup) {
 			client.send_multicast();

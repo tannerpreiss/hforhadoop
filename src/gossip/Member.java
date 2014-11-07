@@ -15,6 +15,7 @@ public class Member implements Serializable {
 
 	private int heartbeat;
 
+  // Set timer as transient so that it is not sent across the network.
 	private transient TimeoutTimer timeoutTimer;
 
 	public Member(String address, int heartbeat, Client client, int t_cleanup) {
