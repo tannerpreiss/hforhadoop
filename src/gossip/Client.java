@@ -49,7 +49,6 @@ public class Client implements NotificationListener {
 		t_gossip    = 100;                      // .1 second
 		t_cleanup   = 10000;                    // 10 seconds
 		random      = new Random();
-//		inGroup     = false;
     inGroup = new AtomicBoolean(false);
     int port    = 2222;
 
@@ -253,9 +252,9 @@ public class Client implements NotificationListener {
             inGroup.set(true);
           }
         }
-        synchronized (Client.this.memberList) {
-          memberList.add(newNode);
-        }
+        ArrayList<Member> new_member = new ArrayList<Member>();
+        new_member.add(newNode);
+        mergeLists(new_member);
 			}
 		}
 	}
@@ -282,7 +281,7 @@ public class Client implements NotificationListener {
 			while(keepRunning.get()) {
 				try {
 					//XXX: be mindful of this array size for later
-					byte[] buf = new byte[256];
+					byte[] buf = new byte[1000];
 					DatagramPacket p = new DatagramPacket(buf, buf.length);
 					gossipServer.receive(p);
 					// extract the member arraylist out of the packet
@@ -317,59 +316,6 @@ public class Client implements NotificationListener {
 				}
 			}
 		}
-
-		/**
-		 * Merge remote list (received from peer), and our local member list.
-		 * Simply, we must update the heartbeats that the remote list has with
-		 * our list.  Also, some additional logic is needed to make sure we have 
-		 * not timed out a member and then immediately received a list with that 
-		 * member.
-		 * @param remoteList
-		 */
-		private void mergeLists(ArrayList<Member> remoteList) {
-
-			synchronized (Client.this.deadList) {
-
-				synchronized (Client.this.memberList) {
-
-					for (Member remoteMember : remoteList) {
-						if(Client.this.memberList.contains(remoteMember)) {
-							Member localMember = Client.this.memberList.get(Client.this.memberList.indexOf(remoteMember));
-
-							if(remoteMember.getHeartbeat() > localMember.getHeartbeat()) {
-								// update local list with latest heartbeat
-								localMember.setHeartbeat(remoteMember.getHeartbeat());
-								// and reset the timeout of that member
-								localMember.resetTimeoutTimer();
-							}
-						}
-						else {
-							// the local list does not contain the remote member
-
-							// the remote member is either brand new, or a previously declared dead member
-							// if its dead, check the heartbeat because it may have come back from the dead
-
-							if(Client.this.deadList.contains(remoteMember)) {
-								Member localDeadMember = Client.this.deadList.get(Client.this.deadList.indexOf(remoteMember));
-								if(remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
-									// it's baa-aack
-									Client.this.deadList.remove(localDeadMember);
-									Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Client.this, t_cleanup);
-									Client.this.memberList.add(newLocalMember);
-									newLocalMember.startTimeoutTimer();
-								} // else ignore
-							}
-							else {
-								// brand spanking new member - welcome
-								Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Client.this, t_cleanup);
-								Client.this.memberList.add(newLocalMember);
-								newLocalMember.startTimeoutTimer();
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -393,14 +339,7 @@ public class Client implements NotificationListener {
 		// AsynchronousMulticastReceiver()
 		executor.execute(new AsynchronousMulticastReceiver(client));
 
-
-//		while (!client.inGroup.get()) {
-    while (true) {
-			synchronized (Client.this.inGroup) {
-        if (inGroup.get()) {
-          break;
-        }
-      }
+    while (!inGroup.get()) {
       client.send_multicast();
 		}
 
@@ -426,6 +365,59 @@ public class Client implements NotificationListener {
 			e.printStackTrace();
 		}
 	}
+
+  /**
+   * Merge remote list (received from peer), and our local member list.
+   * Simply, we must update the heartbeats that the remote list has with
+   * our list.  Also, some additional logic is needed to make sure we have
+   * not timed out a member and then immediately received a list with that 
+   * member.
+   * @param remoteList
+   */
+  private void mergeLists(ArrayList<Member> remoteList) {
+
+    synchronized (Client.this.deadList) {
+
+      synchronized (Client.this.memberList) {
+
+        for (Member remoteMember : remoteList) {
+          if(Client.this.memberList.contains(remoteMember)) {
+            Member localMember = Client.this.memberList.get(Client.this.memberList.indexOf(remoteMember));
+
+            if(remoteMember.getHeartbeat() > localMember.getHeartbeat()) {
+              // update local list with latest heartbeat
+              localMember.setHeartbeat(remoteMember.getHeartbeat());
+              // and reset the timeout of that member
+              localMember.resetTimeoutTimer();
+            }
+          }
+          else {
+            // the local list does not contain the remote member
+
+            // the remote member is either brand new, or a previously declared dead member
+            // if its dead, check the heartbeat because it may have come back from the dead
+
+            if(Client.this.deadList.contains(remoteMember)) {
+              Member localDeadMember = Client.this.deadList.get(Client.this.deadList.indexOf(remoteMember));
+              if(remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
+                // it's baa-aack
+                Client.this.deadList.remove(localDeadMember);
+                Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Client.this, t_cleanup);
+                Client.this.memberList.add(newLocalMember);
+                newLocalMember.startTimeoutTimer();
+              } // else ignore
+            }
+            else {
+              // brand spanking new member - welcome
+              Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Client.this, t_cleanup);
+              Client.this.memberList.add(newLocalMember);
+              newLocalMember.startTimeoutTimer();
+            }
+          }
+        }
+      }
+    }
+  }
 
 	public static void main(String[] args) throws InterruptedException, SocketException, UnknownHostException
     {
