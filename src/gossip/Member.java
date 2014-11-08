@@ -1,5 +1,7 @@
 package gossip;
 
+import org.json.simple.JSONObject;
+
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 
@@ -18,10 +20,10 @@ public class Member implements Serializable {
   // Set timer as transient so that it is not sent across the network.
 	private transient TimeoutTimer timeoutTimer;
 
-	public Member(String address, int heartbeat, Client client, int t_cleanup) {
+	public Member(String address, int heartbeat, Node node, int t_cleanup) {
 		this.address = address;
 		this.heartbeat = heartbeat;
-		this.timeoutTimer = new TimeoutTimer(t_cleanup, client, this);
+		this.timeoutTimer = new TimeoutTimer(t_cleanup, node, this);
 	}
 
   public void setAsMe() {
@@ -50,12 +52,26 @@ public class Member implements Serializable {
 
 	@Override
 	public String toString() {
+    StringBuilder str = new StringBuilder();
+    str.append("Member [addr: ")
+       .append(address).append(", ")
+       .append("h_beat: ")
+       .append(heartbeat).append("]");
+
     if (me) {
-      return "Member [address=" + address + ", heartbeat=" + heartbeat + "] ME!";
-    } else {
-      return "Member [address=" + address + ", heartbeat=" + heartbeat + "]";
+      str.append("\tME");
     }
+    return str.toString();
 	}
+
+  @SuppressWarnings("unchecked")
+  public JSONObject toJSON() {
+    JSONObject obj = new JSONObject();
+    obj.put("address", address);
+    obj.put("heartbeat", heartbeat);
+    obj.put("is_me", me);
+    return obj;
+  }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

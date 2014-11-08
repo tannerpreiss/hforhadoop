@@ -16,14 +16,14 @@ public class TimeoutTimer extends Timer {
 	/**
 	 * Creates a reset-able timer that wakes up after millisecondsSleepTime.
 	 * @param millisecondsSleepTime The time for this timer to wait before an event.
-	 * @param client The client object to send notifications to.
+	 * @param node The client object to send notifications to.
 	 * @param member The member object this timer is associated with.
 	 */
-	public TimeoutTimer(long millisecondsSleepTime, Client client, Member member) {
+	public TimeoutTimer(long millisecondsSleepTime, Node node, Member member) {
 		super();
 		this.sleepTime = millisecondsSleepTime;
 		this.source = member;
-		addNotificationListener(client, null, null);
+		addNotificationListener(node, null, null);
 	}
 
 	public void start() {
