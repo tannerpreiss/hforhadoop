@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Client implements NotificationListener {
+public class Node implements NotificationListener {
 
 	private ArrayList<Member>   memberList;
 	private ArrayList<Member>   deadList;
@@ -24,6 +24,7 @@ public class Client implements NotificationListener {
 	private Member              me;
 	private AtomicBoolean       inGroup;
 	private ExecutorService     executor;
+  private Logger              log;
 
     // Globals for IP Communication
     private final int           MULTICAST_PORT      = 6789;
@@ -36,11 +37,12 @@ public class Client implements NotificationListener {
 	 * @throws InterruptedException
 	 * @throws UnknownHostException
 	 */
-	public Client() throws SocketException, InterruptedException, UnknownHostException {
+	public Node() throws SocketException, InterruptedException, UnknownHostException {
 
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
-				System.out.println("Goodbye my friends...");
+        log.addEvent("SHUT DOWN: System is exiting...");
+//				System.out.println("Goodbye my friends...");
 			}
 		}));
 
@@ -51,6 +53,8 @@ public class Client implements NotificationListener {
 		random      = new Random();
     inGroup = new AtomicBoolean(false);
     int port    = 2222;
+    log = new Logger(this);
+
 
 		NetworkInterface networkInterface;
 		InetSocketAddress address;
@@ -79,8 +83,9 @@ public class Client implements NotificationListener {
 
 		me = new Member(this.myAddress, 0, this, t_cleanup);
     me.setAsMe();
-		System.out.println("I am " + me);
+//		System.out.println("I am " + me);
 		memberList.add(me);
+    log.addEvent("ADD: Add myself to the member list - " + me);
 	}
 
 	/**
@@ -108,12 +113,14 @@ public class Client implements NotificationListener {
 					InetAddress dest;
 					dest = InetAddress.getByName(host);
 
-					System.out.println("Sending to " + dest);
-					System.out.println("---------------------");
-					for (Member m : memberList) {
-						System.out.println(m);
-					}
-					System.out.println("---------------------");
+          log.addEvent("SEND: sending member list to - " + dest);
+
+//					System.out.println("Sending to " + dest);
+//					System.out.println("---------------------");
+//					for (Member m : memberList) {
+//						System.out.println(m);
+//					}
+//					System.out.println("---------------------");
 
 					//simulate some packet loss ~25%
 					int percentToSend = random.nextInt(100);
@@ -154,7 +161,8 @@ public class Client implements NotificationListener {
 			} while(member.getAddress().equals(this.myAddress));
 		}
 		else {
-			System.out.println("I am alone in this world.");
+      log.addEvent("I'm alone in this world.");
+//			System.out.println("I am alone in this world.");
 		}
 
 		return member;
@@ -203,11 +211,11 @@ public class Client implements NotificationListener {
 	private class AsynchronousMulticastReceiver implements Runnable {
 
 		private AtomicBoolean keepRunning;
-		private Client myClient;
+		private Node myNode;
 
-		public AsynchronousMulticastReceiver(Client client) {
+		public AsynchronousMulticastReceiver(Node node) {
 			keepRunning = new AtomicBoolean(true);
-			myClient = client;
+			myNode = node;
 
 		}
 
@@ -225,7 +233,8 @@ public class Client implements NotificationListener {
 						// get their responses!
 						byte[] buf = new byte[1000];
 						recv = new DatagramPacket(buf, buf.length);
-						System.out.println("started to block on receive!");
+            log.addEvent("WAIT: Waiting for multicast message");
+//						System.out.println("started to block on receive!");
 
 						multicastServer.receive(recv);
 
@@ -240,19 +249,20 @@ public class Client implements NotificationListener {
 
 
 				// ------------------------ ADD IP TO LIST ------------------------
-				Member newNode = new Member(newNodeIp, 0, myClient, t_cleanup);
-				System.out.println("Adding new node: " + newNode);
+				Member newNode = new Member(newNodeIp, 0, myNode, t_cleanup);
+//				System.out.println("Adding new node: " + newNode);
 
-        synchronized (Client.this.inGroup) {
+        synchronized (Node.this.inGroup) {
           if (!inGroup.get()) {
             inGroup.set(true);
           }
         }
 
-        synchronized (Client.this.memberList) {
-          if (!Client.this.memberList.contains(newNode)) {
-            Client.this.memberList.add(newNode);
+        synchronized (Node.this.memberList) {
+          if (!Node.this.memberList.contains(newNode)) {
+            Node.this.memberList.add(newNode);
             newNode.startTimeoutTimer();
+            log.addEvent("ADD: Add new node to member list - " + newNode);
           }
         }
 			}
@@ -269,7 +279,7 @@ public class Client implements NotificationListener {
 	private class AsynchronousGossipReceiver implements Runnable {
 
 		private AtomicBoolean keepRunning;
-    private Client myClient;
+    private Node myNode;
 
 		public AsynchronousGossipReceiver() {
 			keepRunning = new AtomicBoolean(true);
@@ -294,11 +304,12 @@ public class Client implements NotificationListener {
 //						inGroup = true;
 						ArrayList<Member> list = (ArrayList<Member>) readObject;
 
+            log.addEvent("RECV: Receiving member list");
 						System.out.println("Received member list:");
 						for (Member member : list) {
 							System.out.println(member);
 						}
-            synchronized (Client.this.inGroup) {
+            synchronized (Node.this.inGroup) {
               if (!inGroup.get()) {
                 inGroup.set(true);
               }
@@ -323,7 +334,7 @@ public class Client implements NotificationListener {
 	 * Start the gossip thread and start the receiver thread.
 	 * @throws InterruptedException
 	 */
-	private void start_listeners(Client client) throws InterruptedException {
+	private void start_listeners(Node node) throws InterruptedException {
 
         // TODO: this will not run, since in the constructor, all we add is oneself
 		for (Member member : memberList) {
@@ -337,10 +348,10 @@ public class Client implements NotificationListener {
 		executor.execute(new AsynchronousGossipReceiver());
 
 		// AsynchronousMulticastReceiver()
-		executor.execute(new AsynchronousMulticastReceiver(client));
+		executor.execute(new AsynchronousMulticastReceiver(node));
 
     while (!inGroup.get()) {
-      client.send_multicast();
+      node.send_multicast();
 		}
 
 		System.out.println("IN GROUP!!!!!!!!!");
@@ -376,13 +387,13 @@ public class Client implements NotificationListener {
    */
   private void mergeLists(ArrayList<Member> remoteList) {
 
-    synchronized (Client.this.deadList) {
+    synchronized (Node.this.deadList) {
 
-      synchronized (Client.this.memberList) {
+      synchronized (Node.this.memberList) {
 
         for (Member remoteMember : remoteList) {
-          if(Client.this.memberList.contains(remoteMember)) {
-            Member localMember = Client.this.memberList.get(Client.this.memberList.indexOf(remoteMember));
+          if(Node.this.memberList.contains(remoteMember)) {
+            Member localMember = Node.this.memberList.get(Node.this.memberList.indexOf(remoteMember));
 
             if(remoteMember.getHeartbeat() > localMember.getHeartbeat()) {
               // update local list with latest heartbeat
@@ -397,20 +408,20 @@ public class Client implements NotificationListener {
             // the remote member is either brand new, or a previously declared dead member
             // if its dead, check the heartbeat because it may have come back from the dead
 
-            if(Client.this.deadList.contains(remoteMember)) {
-              Member localDeadMember = Client.this.deadList.get(Client.this.deadList.indexOf(remoteMember));
+            if(Node.this.deadList.contains(remoteMember)) {
+              Member localDeadMember = Node.this.deadList.get(Node.this.deadList.indexOf(remoteMember));
               if(remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
                 // it's baa-aack
-                Client.this.deadList.remove(localDeadMember);
-                Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Client.this, t_cleanup);
-                Client.this.memberList.add(newLocalMember);
+                Node.this.deadList.remove(localDeadMember);
+                Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, t_cleanup);
+                Node.this.memberList.add(newLocalMember);
                 newLocalMember.startTimeoutTimer();
               } // else ignore
             }
             else {
               // brand spanking new member - welcome
-              Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Client.this, t_cleanup);
-              Client.this.memberList.add(newLocalMember);
+              Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, t_cleanup);
+              Node.this.memberList.add(newLocalMember);
               newLocalMember.startTimeoutTimer();
             }
           }
@@ -421,8 +432,8 @@ public class Client implements NotificationListener {
 
 	public static void main(String[] args) throws InterruptedException, SocketException, UnknownHostException
     {
-		Client client = new Client();
-		client.start_listeners(client);
+		Node node = new Node();
+		node.start_listeners(node);
 	}
 
 	/**
