@@ -1,6 +1,7 @@
 
 # Compiled files
 bin
+out
 
 # Mac hidden file
 .DS_Store
