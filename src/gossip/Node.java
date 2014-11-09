@@ -15,8 +15,6 @@ public class Node implements NotificationListener {
 
   private ArrayList<Member> memberList;
   private ArrayList<Member> deadList;
-  private int               t_gossip;   //in ms
-  public  int               t_cleanup;  //in ms
   private Random            random;
   private DatagramSocket    gossipServer;
   private MulticastSocket   multicastServer;
@@ -25,14 +23,6 @@ public class Node implements NotificationListener {
   private AtomicBoolean     inGroup;
   private ExecutorService   executor;
   private Logger            log;
-
-  // Globals for IP Communication
-  private final int    MULTICAST_PORT    = 6789;
-  private final String MULTICAST_ADDRESS = "228.5.6.7";
-  private final String INTERFACE_NAME    = "en1";
-
-  private final int GOSSIP_PORT = 9999;
-
   /**
    * Setup the client's lists, gossiping parameters, and parse the startup config file.
    *
@@ -50,8 +40,6 @@ public class Node implements NotificationListener {
 
     memberList = new ArrayList<Member>();
     deadList = new ArrayList<Member>();
-    t_gossip = 1000;                      // .1 second
-    t_cleanup = 10000;                    // 10 seconds
     random = new Random();
     inGroup = new AtomicBoolean(false);
     log = new Logger(this);
@@ -62,25 +50,25 @@ public class Node implements NotificationListener {
     InetAddress group;
 
     try {
-      group = InetAddress.getByName(MULTICAST_ADDRESS);
+      group = InetAddress.getByName(Gossip.MULTICAST_ADDRESS);
 
-      networkInterface = NetworkInterface.getByName(INTERFACE_NAME);
-      address = new InetSocketAddress(group, MULTICAST_PORT);
+      networkInterface = NetworkInterface.getByName(Gossip.INTERFACE_NAME);
+      address = new InetSocketAddress(group, Gossip.MULTICAST_PORT);
 
-      multicastServer = new MulticastSocket(MULTICAST_PORT);
+      multicastServer = new MulticastSocket(Gossip.MULTICAST_PORT);
       multicastServer.joinGroup(address, networkInterface);
     } catch (Exception e) {
       e.printStackTrace();
     }
 
     String myIpAddress = InetAddress.getLocalHost().getHostAddress();
-    this.myAddress = myIpAddress + ":" + GOSSIP_PORT;
+    this.myAddress = myIpAddress + ":" + Gossip.GOSSIP_PORT;
 
-    gossipServer = new DatagramSocket(GOSSIP_PORT);
+    gossipServer = new DatagramSocket(Gossip.GOSSIP_PORT);
 
     executor = Executors.newCachedThreadPool();
 
-    me = new Member(this.myAddress, 0, this, t_cleanup);
+    me = new Member(this.myAddress, 0, this, Gossip.GOSSIP_CLEAN);
     me.setAsMe();
     memberList.add(me);
     log.addEvent("ADD: Add myself to the member list - " + me);
@@ -186,7 +174,7 @@ public class Node implements NotificationListener {
     public void run() {
       while (this.keepRunning.get()) {
         try {
-          TimeUnit.MILLISECONDS.sleep(t_gossip);
+          TimeUnit.MILLISECONDS.sleep(Gossip.GOSSIP_PING);
           sendMembershipList();
         } catch (InterruptedException e) {
           // TODO: handle exception
@@ -238,7 +226,7 @@ public class Node implements NotificationListener {
 
             multicastServer.receive(recv);
 
-            newNodeIp = recv.getAddress().toString().substring(1) + ":" + Node.this.GOSSIP_PORT;
+            newNodeIp = recv.getAddress().toString().substring(1) + ":" + Gossip.GOSSIP_PORT;
             log.addEvent("RECV: Received multicast message - " + newNodeIp);
 //            System.out.println(newNodeIp);
 
@@ -250,7 +238,7 @@ public class Node implements NotificationListener {
 
 
         // ------------------------ ADD IP TO LIST ------------------------
-        Member newNode = new Member(newNodeIp, 0, myNode, t_cleanup);
+        Member newNode = new Member(newNodeIp, 0, myNode, Gossip.GOSSIP_CLEAN);
 //				System.out.println("Adding new node: " + newNode);
 
         synchronized (Node.this.inGroup) {
@@ -337,7 +325,7 @@ public class Node implements NotificationListener {
    *
    * @throws InterruptedException
    */
-  private void start_listeners(Node node) throws InterruptedException {
+  public void start_listeners(Node node) throws InterruptedException {
 
     // TODO: this will not run, since in the constructor, all we add is oneself
     for (Member member : memberList) {
@@ -371,8 +359,8 @@ public class Node implements NotificationListener {
     // join a Multicast group and send the group salutations
     try {
       String msg = "Hello";
-      InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-      DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, MULTICAST_PORT);
+      InetAddress group = InetAddress.getByName(Gossip.MULTICAST_ADDRESS);
+      DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, Gossip.MULTICAST_PORT);
       multicastServer.send(hi);
       Thread.sleep(3000);
     } catch (Exception e) {
@@ -416,13 +404,13 @@ public class Node implements NotificationListener {
               if (remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
                 // it's baa-aack
                 Node.this.deadList.remove(localDeadMember);
-                Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, t_cleanup);
+                Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, Gossip.GOSSIP_CLEAN);
                 Node.this.memberList.add(newLocalMember);
                 newLocalMember.startTimeoutTimer();
               } // else ignore
             } else {
               // brand spanking new member - welcome
-              Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, t_cleanup);
+              Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, Gossip.GOSSIP_CLEAN);
               Node.this.memberList.add(newLocalMember);
               newLocalMember.startTimeoutTimer();
             }
@@ -430,11 +418,6 @@ public class Node implements NotificationListener {
         }
       }
     }
-  }
-
-  public static void main(String[] args) throws InterruptedException, SocketException, UnknownHostException {
-    Node node = new Node();
-    node.start_listeners(node);
   }
 
   /**
