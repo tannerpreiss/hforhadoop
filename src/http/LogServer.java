@@ -88,12 +88,7 @@ public class LogServer {
       str.append(params.get("callback")).append("("); // Set callback function
 
       Node node = my_log.getNodeObj();
-      JSONArray arr = new JSONArray();
-      synchronized (node.getMembers()) {
-        for (Member m : node.getMembers()) {
-          arr.add(m.toJSON());
-        }
-      }
+      JSONArray arr = node.getMemberManager().getMembersJSON();
       JSONObject obj = new JSONObject();
       obj.put("member_list", arr);
 
@@ -115,14 +110,7 @@ public class LogServer {
       // Build response
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
-      ArrayList<String> events = my_log.getEvents();
-      JSONArray arr = new JSONArray();
-      synchronized (events) {
-        for (String e : events) {
-          arr.add(e);
-        }
-        events.clear();
-      }
+      JSONArray arr = my_log.getEventsJSON();
 
       JSONObject obj = new JSONObject();
       obj.put("event_list", arr);
