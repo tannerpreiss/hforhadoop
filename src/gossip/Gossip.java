@@ -15,7 +15,7 @@ public class Gossip {
   public final static String INTERFACE_NAME    = "en1"; // Interface name
   public final static int    GOSSIP_PORT       = 9999; // Port for gossip requests
 
-  public void main(String args[]) throws InterruptedException, SocketException, UnknownHostException {
+  public static void main(String args[]) throws InterruptedException, SocketException, UnknownHostException {
     Node node = new Node();
     node.start_listeners(node);
   }

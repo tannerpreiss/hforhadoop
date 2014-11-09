@@ -34,7 +34,7 @@ public class Node implements NotificationListener {
 
     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
       public void run() {
-				System.out.println("Goodbye my friends...");
+        System.out.println("Goodbye my friends...");
       }
     }));
 
@@ -265,7 +265,7 @@ public class Node implements NotificationListener {
    * additional information, you will need some logic to determine
    * the incoming message.
    */
-  private class AsynchronousGossipReceiver implements Runnable {
+  class AsynchronousGossipReceiver implements Runnable {
 
     private AtomicBoolean keepRunning;
     private Node          myNode;
