@@ -9,8 +9,8 @@ public class Gossip {
   // Global Variables
 
   public final static int    PORT_NUM          = 222; // Default port number for requests
-  public final static int    GOSSIP_PING       = 1000; // Time between gossip pings
-  public final static int    GOSSIP_CLEAN      = 10000;  // Time for unresponsive nodes
+  public final static int    GOSSIP_PING       = 3000; // Time between gossip pings
+  public final static int    GOSSIP_CLEAN      = 15000;  // Time for unresponsive nodes
   public final static int    MULTICAST_PORT    = 6789; // Port for multicast requests
   public final static String MULTICAST_ADDRESS = "228.5.6.7"; // Address for multicast request
   public final static String INTERFACE_NAME    = "en1"; // Interface name

@@ -90,6 +90,8 @@ public class MemberManager {
     memberList.add(newLocalMember);
     if (!newLocalMember.isMe()) {
       newLocalMember.startTimeoutTimer();
+    } else {
+    	me = newLocalMember;
     }
     log.addEvent("ADD: Added new member to list - " + newLocalMember);
   }
@@ -135,6 +137,9 @@ public class MemberManager {
    */
   synchronized public void sendMembershipList() {
     // Increase my own heartbeat
+	if (me == null) {
+		log.addEvent(LogType.ERROR, "SEND: I am null!");
+	}
     me.setHeartbeat(me.getHeartbeat() + 1);
 
     // Send member list to random member
