@@ -63,12 +63,13 @@ public class Node implements NotificationListener {
     executor = Executors.newCachedThreadPool();
 
     Member me = new Member(this.myAddress, 0, this, Gossip.GOSSIP_CLEAN);
-    me.setAsMe();
     memberManager.addNewMember(me);
     log.addEvent("ADD: Add myself to the member list - " + me);
   }
 
   public MemberManager getMemberManager() { return memberManager; }
+
+  public String getMyAddress() { return myAddress; }
 
   synchronized public void markInGroup() {
     if (!inGroup.get()) {

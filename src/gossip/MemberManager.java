@@ -88,11 +88,8 @@ public class MemberManager {
     Member newLocalMember =
       new Member(newMember.getAddress(), newMember.getHeartbeat(), node, Gossip.GOSSIP_CLEAN);
     memberList.add(newLocalMember);
-    if (!newMember.isMe()) {
+    if (!newLocalMember.isMe()) {
       newLocalMember.startTimeoutTimer();
-    } else {
-      me = newLocalMember;
-      me.setAsMe();
     }
     log.addEvent("ADD: Added new member to list - " + newLocalMember);
   }

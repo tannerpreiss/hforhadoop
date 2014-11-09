@@ -15,22 +15,19 @@ public class Member implements Serializable {
 	 */
 	private String address;
 	private int heartbeat;
-  private boolean me;
+  private Node myNode;
 
   // Set timer as transient so that it is not sent across the network.
 	private transient TimeoutTimer timeoutTimer;
 
 	public Member(String address, int heartbeat, Node node, int t_cleanup) {
+    myNode = node;
 		this.address = address;
 		this.heartbeat = heartbeat;
 		this.timeoutTimer = new TimeoutTimer(t_cleanup, node, this);
 	}
 
-  public void setAsMe() {
-    me = true;
-  }
-
-  public boolean isMe() { return me; }
+  public boolean isMe() { return myNode.getMyAddress().equals(address); }
 
 	public void startTimeoutTimer() {
 		this.timeoutTimer.start();
@@ -60,7 +57,7 @@ public class Member implements Serializable {
        .append("h_beat: ")
        .append(heartbeat);
 
-    if (me) {
+    if (isMe()) {
       str.append(" - ME");
     }
     return str.toString();
@@ -71,7 +68,7 @@ public class Member implements Serializable {
     JSONObject obj = new JSONObject();
     obj.put("address", address);
     obj.put("heartbeat", heartbeat);
-    obj.put("is_me", me);
+    obj.put("is_me", isMe());
     return obj;
   }
 
