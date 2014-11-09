@@ -62,7 +62,7 @@ public class MemberManager {
         } else {
           // brand spanking new member - welcome
           log.addEvent("MERGE: Add remote member");
-          insertMember(remoteMember);
+          insertMember(remoteMember, false);
         }
       }
     }
@@ -72,11 +72,11 @@ public class MemberManager {
    * Add new member to list.
    * @param newMember New member object.
    */
-  synchronized public void addNewMember(Member newMember) {
+  synchronized public void addNewMember(Member newMember, boolean addAsMe) {
     if (memberList.contains(newMember)) {
       log.addEvent(LogType.WARNING, "Could not add duplicate member - " + newMember);
     } else {
-      insertMember(newMember);
+      insertMember(newMember, addAsMe);
     }
   }
 
@@ -84,14 +84,14 @@ public class MemberManager {
    * Clone member object and add to list. It does NOT check for duplicated
    * @param newMember New member
    */
-  synchronized private void insertMember(Member newMember) {
+  synchronized private void insertMember(Member newMember, boolean addAsMe) {
     Member newLocalMember =
       new Member(newMember.getAddress(), newMember.getHeartbeat(), node, Gossip.GOSSIP_CLEAN);
     memberList.add(newLocalMember);
-    if (!newLocalMember.isMe()) {
+    if (!addAsMe) {
       newLocalMember.startTimeoutTimer();
     } else {
-    	me = newLocalMember;
+      me = newLocalMember;
     }
     log.addEvent("ADD: Added new member to list - " + newLocalMember);
   }

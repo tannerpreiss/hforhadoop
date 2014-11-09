@@ -63,7 +63,7 @@ public class Node implements NotificationListener {
     executor = Executors.newCachedThreadPool();
 
     Member me = new Member(this.myAddress, 0, this, Gossip.GOSSIP_CLEAN);
-    memberManager.addNewMember(me);
+    memberManager.addNewMember(me, true);
     log.addEvent("ADD: Add myself to the member list - " + me);
   }
 
@@ -160,7 +160,7 @@ public class Node implements NotificationListener {
         Member newNode = new Member(newNodeIp, 0, myNode, Gossip.GOSSIP_CLEAN);
 
         markInGroup(); // Change to inGroup state
-        memberManager.addNewMember(newNode); // Add new member to list
+        memberManager.addNewMember(newNode, false); // Add new member to list
       }
 
       this.keepRunning = null;
