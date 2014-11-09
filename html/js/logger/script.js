@@ -6,6 +6,7 @@ var polling_freq = 2500;
 var polling_url = "localhost:8001";
 var member_uri = "members";
 var event_uri = "events";
+var auto_scroll = true;
 
 var EVENT_CALL = "event";
 var MEMBER_CALL = "member";
@@ -13,9 +14,36 @@ var MEMBER_CALL = "member";
 $(document).ready(function() {
   $('#members_button').click(call_members);
   $('#events_button').click(call_events);
-  $('#toggle_ajax_members').click(toggle_ajax_members);
-  $('#toggle_ajax_events').click(toggle_ajax_events);
+  $('#toggle_members_polling').click(toggle_ajax_members);
+  $('#toggle_events_polling').click(toggle_ajax_events);
+  $('#toggle_auto_scroll').click(toggle_auto_scroll);
+  $('.toggle_events').click(toggle_events_visibility);
 });
+
+function toggle_events_visibility(e) {
+  var elem = $(this);
+  var type = elem.attr("data-type");
+  if (type === "info") {
+    $('.event_table').toggleClass("hide_info");
+    $('#toggle_info').toggleClass("hidden");
+  } else if (type === "warning") {
+    $('.event_table').toggleClass("hide_warning");
+    $('#toggle_warning').toggleClass("hidden");
+  } else if (type === "error") {
+    $('.event_table').toggleClass("hide_error");
+    $('#toggle_error').toggleClass("hidden");
+  }
+}
+
+function toggle_auto_scroll() {
+  if (auto_scroll) {
+    $('#toggle_auto_scroll').html("Enable Auto Scroll");
+    auto_scroll = false;
+  } else {
+    $('#toggle_auto_scroll').html("Disable Auto Scroll");
+    auto_scroll = true;
+  }
+}
 
 function update_polling_info() {
   var val = $('#polling_freq').val();
@@ -41,22 +69,22 @@ function toggle_ajax(call_type) {
   if (call_type === MEMBER_CALL) {
     if (keeprunning_members) {
       keeprunning_members = false;
-      $('#toggle_ajax_members').html("Start Members");
+      $('#toggle_members_polling').html("Start Members");
       $('#members_button').prop("disabled", false);
     } else {
       keeprunning_members = true;
-      $('#toggle_ajax_members').html("Stop Members");
+      $('#toggle_members_polling').html("Stop Members");
       $('#members_button').prop("disabled", true);
       poll_members();
     }
   } else if (call_type === EVENT_CALL) {
     if (keeprunning_events) {
       keeprunning_events = false;
-      $('#toggle_ajax_events').html("Start Events");
+      $('#toggle_events_polling').html("Start Events");
       $('#events_button').prop("disabled", false);
     } else {
       keeprunning_events = true;
-      $('#toggle_ajax_events').html("Stop Events");
+      $('#toggle_events_polling').html("Stop Events");
       $('#events_button').prop("disabled", true);
       poll_events();
     }
@@ -144,11 +172,17 @@ function refresh_data_event(data) {
   var events = data.event_list;
   for (var i = 0; i < events.length; i++) {
     var counter = col.clone().html(event_counter);
-    var event = col.clone().html(events[i]);
-    tbody.append(row.clone().append(counter, event));
+    var event_type = events[i].log_type;
+    var type = col.clone().html(event_type);
+    var event = col.clone().html(events[i].message);
+    var row_curr = row.clone().append(counter, type, event);
+    row_curr.attr("data-event-type", event_type);
+    tbody.append(row_curr);
     event_counter++;
   }
 
-  var container = $('.events');
-  container.animate({ scrollTop: container[0].scrollHeight }, "slow");
+  if (auto_scroll) {
+    var container = $('.events');
+    container.animate({ scrollTop: container[0].scrollHeight }, "slow");
+  }
 }

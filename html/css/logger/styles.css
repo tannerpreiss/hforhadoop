@@ -223,7 +223,30 @@ h1 {
 
 .controls_container .button_container {
   margin-top: 1em;
-  text-align: center; }
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+  width: 50em;
+  margin: 0 auto; }
+  .controls_container .button_container button {
+    margin: 0.2em;
+    border: 0.2em solid transparent; }
+  .controls_container .button_container button:hover {
+    background-color: white;
+    color: #477DCA;
+    border: 0.2em solid #477DCA; }
+  .controls_container .button_container button.hidden {
+    background-color: white;
+    color: #477DCA;
+    border: 0.2em solid #477DCA; }
+  .controls_container .button_container button.hidden:hover {
+    background-color: #e5edf8; }
 .controls_container .input_container {
   margin: 1em auto 0 auto;
   display: -webkit-flex;
@@ -262,8 +285,10 @@ h1 {
     .log_info div.list_container > div {
       margin-bottom: 1em; }
       .log_info div.list_container > div tr td:nth-child(2), .log_info div.list_container > div tr th:nth-child(2) {
+        text-align: right;
         width: 30%; }
       .log_info div.list_container > div tr td:nth-child(3), .log_info div.list_container > div tr th:nth-child(3) {
+        text-align: center;
         width: 20%; }
   .log_info div.events {
     -webkit-flex-grow: 1;
@@ -272,6 +297,15 @@ h1 {
     margin-bottom: 0.5em;
     overflow-y: auto;
     height: 80vh; }
-    .log_info div.events tr td:first-child, .log_info div.events tr th:first-child {
+    .log_info div.events tr td:nth-child(1), .log_info div.events tr th:nth-child(1) {
       text-align: center;
       width: 10%; }
+    .log_info div.events tr td:nth-child(2), .log_info div.events tr th:nth-child(2) {
+      text-align: center;
+      width: 15%; }
+    .log_info div.events .event_table.hide_info tr[data-event-type="INFO"] {
+      display: none; }
+    .log_info div.events .event_table.hide_warning tr[data-event-type="WARNING"] {
+      display: none; }
+    .log_info div.events .event_table.hide_error tr[data-event-type="ERROR"] {
+      display: none; }

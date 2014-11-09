@@ -23,8 +23,12 @@
     <div class="button_container">
       <button id="members_button">Get Members</button>
       <button id="events_button">Get Events</button>
-      <button id="toggle_ajax_members">Start Members</button>
-      <button id="toggle_ajax_events">Start Events</button>
+      <button id="toggle_members_polling">Start Members</button>
+      <button id="toggle_events_polling">Start Events</button>
+      <button id="toggle_auto_scroll">Disable Auto Scroll</button>
+      <button class="toggle_events" id="toggle_info" data-type="info">Toggle Info</button>
+      <button class="toggle_events" id="toggle_warning" data-type="warning">Toggle Warnings</button>
+      <button class="toggle_events" id="toggle_error" data-type="error">Toggle Error</button>
     </div>
     <div class="input_container">
       <div class="input_group">
@@ -55,10 +59,11 @@
     <div class="events">
       <table class="event_table">
         <thead>
-        <tr>
-          <th>ID</th>
-          <th>Description</th>
-        </tr>
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
         </thead>
         <tbody>
         </tbody>
