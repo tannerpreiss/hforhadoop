@@ -29,6 +29,7 @@ public class Logger {
   }
 
   public void addEvent(String str) {
+    str = str.replaceAll("(\r\n|\n)", "<br />");
     synchronized (Logger.this.events) {
       events.add(str);
     }
