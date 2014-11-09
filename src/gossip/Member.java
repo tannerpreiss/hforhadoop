@@ -30,6 +30,8 @@ public class Member implements Serializable {
     me = true;
   }
 
+  public boolean isMe() { return me; }
+
 	public void startTimeoutTimer() {
 		this.timeoutTimer.start();
 	}
@@ -53,13 +55,13 @@ public class Member implements Serializable {
 	@Override
 	public String toString() {
     StringBuilder str = new StringBuilder();
-    str.append("Member [addr: ")
+    str.append("addr: ")
        .append(address).append(", ")
        .append("h_beat: ")
-       .append(heartbeat).append("]");
+       .append(heartbeat);
 
     if (me) {
-      str.append("\tME");
+      str.append(" - ME");
     }
     return str.toString();
 	}
