@@ -24,8 +24,8 @@ public class MemberManager {
     node = n;
     log = l;
     random = new Random();
-    memberList = new ArrayList<>();
-    deadList = new ArrayList<>();
+    memberList = new ArrayList<Member>();
+    deadList = new ArrayList<Member>();
   }
 
   /**
