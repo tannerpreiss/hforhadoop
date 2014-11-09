@@ -13,13 +13,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Node implements NotificationListener {
 
-  private ArrayList<Member> memberList;
-  private ArrayList<Member> deadList;
-  private Random            random;
+  private MemberManager memberManager;
   private DatagramSocket    gossipServer;
   private MulticastSocket   multicastServer;
   private String            myAddress;
-  private Member            me;
   private AtomicBoolean     inGroup;
   private ExecutorService   executor;
   private Logger            log;
@@ -38,12 +35,9 @@ public class Node implements NotificationListener {
       }
     }));
 
-    memberList = new ArrayList<Member>();
-    deadList = new ArrayList<Member>();
-    random = new Random();
-    inGroup = new AtomicBoolean(false);
     log = new Logger(this);
-
+    memberManager = new MemberManager(this, log);
+    inGroup = new AtomicBoolean(false);
 
     NetworkInterface networkInterface;
     InetSocketAddress address;
@@ -68,92 +62,25 @@ public class Node implements NotificationListener {
 
     executor = Executors.newCachedThreadPool();
 
-    me = new Member(this.myAddress, 0, this, Gossip.GOSSIP_CLEAN);
+    Member me = new Member(this.myAddress, 0, this, Gossip.GOSSIP_CLEAN);
     me.setAsMe();
-    memberList.add(me);
+    memberManager.addNewMember(me);
     log.addEvent("ADD: Add myself to the member list - " + me);
   }
 
-  public ArrayList<Member> getMembers() { return memberList; }
+  public MemberManager getMemberManager() { return memberManager; }
 
-  /**
-   * Performs the sending of the membership list, after we have
-   * incremented our own heartbeat.
-   */
-  private void sendMembershipList() {
-
-    this.me.setHeartbeat(me.getHeartbeat() + 1);
-
-    synchronized (this.memberList) {
-      try {
-        Member member = getRandomMember();
-
-        if (member != null) {
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          ObjectOutputStream oos = new ObjectOutputStream(baos);
-          oos.writeObject(this.memberList);
-          byte[] buf = baos.toByteArray();
-
-          String address = member.getAddress();
-          String host = address.split(":")[0];
-          int port = Integer.parseInt(address.split(":")[1]);
-
-          InetAddress dest;
-          dest = InetAddress.getByName(host);
-
-          log.addEvent("SEND: sending member list to - " + dest);
-
-//					System.out.println("Sending to " + dest);
-//					System.out.println("---------------------");
-//					for (Member m : memberList) {
-//						System.out.println(m);
-//					}
-//					System.out.println("---------------------");
-
-          //simulate some packet loss ~25%
-          int percentToSend = random.nextInt(100);
-          if (percentToSend > 25) {
-            DatagramSocket socket = new DatagramSocket();
-            DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length, dest, port);
-            socket.send(datagramPacket);
-            socket.close();
-          }
-        }
-
-      } catch (IOException e1) {
-        e1.printStackTrace();
-      }
+  synchronized public void markInGroup() {
+    if (!inGroup.get()) {
+      inGroup.set(true);
     }
   }
 
-  /**
-   * Find a random peer from the local membership list.
-   * Ensure that we do not select ourselves, and keep
-   * trying 10 times if we do.  Therefore, in the case
-   * where this client is the only member in the list,
-   * this method will return null
-   *
-   * @return Member random member if list is greater than 1, null otherwise
-   */
-  private Member getRandomMember() {
-    Member member = null;
-
-    if (this.memberList.size() > 1) {
-      int tries = 10;
-      do {
-        int randomNeighborIndex = random.nextInt(this.memberList.size());
-        member = this.memberList.get(randomNeighborIndex);
-        if (--tries <= 0) {
-          member = null;
-          break;
-        }
-      } while (member.getAddress().equals(this.myAddress));
-    } else {
-      log.addEvent("ALONE: I'm alone in this world.");
-//			System.out.println("I am alone in this world.");
+  synchronized public void markOutGroup () {
+    //TODO: Should we mark out of group when thread is alone?
+    if (inGroup.get()) {
+      inGroup.set(false);
     }
-
-    return member;
   }
 
   /**
@@ -175,7 +102,7 @@ public class Node implements NotificationListener {
       while (this.keepRunning.get()) {
         try {
           TimeUnit.MILLISECONDS.sleep(Gossip.GOSSIP_PING);
-          sendMembershipList();
+          memberManager.sendMembershipList();
         } catch (InterruptedException e) {
           // TODO: handle exception
           // This membership thread was interrupted externally, shutdown
@@ -190,11 +117,8 @@ public class Node implements NotificationListener {
   }
 
   /**
-   * This class handles the passive cycle, where this client
-   * has received an incoming message.  For now, this message
-   * is always the membership list, but if you choose to gossip
-   * additional information, you will need some logic to determine
-   * the incoming message.
+   * This class listens on the multicast socket for new nodes.
+   * Updated the member list as necessary.
    */
   private class AsynchronousMulticastReceiver implements Runnable {
 
@@ -211,50 +135,34 @@ public class Node implements NotificationListener {
     @Override
     public void run() {
       while (keepRunning.get()) {
-
         // --------------------- RECEIVE ON MULTICAST ---------------------
-
         DatagramPacket recv = null;
         String newNodeIp = "";
         try {
           do {
             // get their responses!
-            byte[] buf = new byte[1000];
+            byte[] buf = new byte[Gossip.PACKET_SIZE];
             recv = new DatagramPacket(buf, buf.length);
             log.addEvent("WAIT: Waiting for multicast message");
-//						System.out.println("started to block on receive!");
 
             multicastServer.receive(recv);
 
-            newNodeIp = recv.getAddress().toString().substring(1) + ":" + Gossip.GOSSIP_PORT;
+            newNodeIp = Gossip.getAddress(recv);
             log.addEvent("RECV: Received multicast message - " + newNodeIp);
-//            System.out.println(newNodeIp);
 
           } while (((newNodeIp).equals(myAddress)));
-        } catch (Exception e) {
+        } catch (IOException e) {
+          log.addEvent(LogType.ERROR, "Error receiving datagram packet: " + e.getMessage());
           e.printStackTrace();
         }
-        // ----------------------------------------------------------------
 
-
-        // ------------------------ ADD IP TO LIST ------------------------
         Member newNode = new Member(newNodeIp, 0, myNode, Gossip.GOSSIP_CLEAN);
-//				System.out.println("Adding new node: " + newNode);
 
-        synchronized (Node.this.inGroup) {
-          if (!inGroup.get()) {
-            inGroup.set(true);
-          }
-        }
-
-        synchronized (Node.this.memberList) {
-          if (!Node.this.memberList.contains(newNode)) {
-            Node.this.memberList.add(newNode);
-            newNode.startTimeoutTimer();
-            log.addEvent("ADD: Add new node to member list - " + newNode);
-          }
-        }
+        markInGroup(); // Change to inGroup state
+        memberManager.addNewMember(newNode); // Add new member to list
       }
+
+      this.keepRunning = null;
     }
   }
 
@@ -280,7 +188,7 @@ public class Node implements NotificationListener {
       while (keepRunning.get()) {
         try {
           //XXX: be mindful of this array size for later
-          byte[] buf = new byte[1000];
+          byte[] buf = new byte[Gossip.PACKET_SIZE];
           DatagramPacket p = new DatagramPacket(buf, buf.length);
           gossipServer.receive(p);
 
@@ -294,21 +202,21 @@ public class Node implements NotificationListener {
 //						inGroup = true;
             ArrayList<Member> list = (ArrayList<Member>) readObject;
 
-            log.addEvent("RECV: Receiving member list - " + p.getAddress());
-//            System.out.println("Received member list:");
-//            for (Member member : list) {
-//              System.out.println(member);
-//            }
-            synchronized (Node.this.inGroup) {
-              if (!inGroup.get()) {
-                inGroup.set(true);
-              }
+            StringBuilder str = new StringBuilder();
+            str.append("RECV: Receiving member list\n From: ")
+               .append(p.getAddress()).append("\nList:\n");
+            for (Member m : list) {
+              str.append(m).append("\n");
             }
+            log.addEvent(str.toString());
+
+            markInGroup();
             // Merge our list with the one we just received
-            mergeLists(list);
+            memberManager.mergeLists(list);
           }
 
         } catch (IOException e) {
+          log.addEvent(LogType.ERROR, "Gossip receiver IO error. Stopping thread...");
           e.printStackTrace();
           keepRunning.set(false);
         } catch (ClassNotFoundException e) {
@@ -327,13 +235,6 @@ public class Node implements NotificationListener {
    */
   public void start_listeners(Node node) throws InterruptedException {
 
-    // TODO: this will not run, since in the constructor, all we add is oneself
-    for (Member member : memberList) {
-      if (member != me) {
-        member.startTimeoutTimer();
-      }
-    }
-
     //  The receiver thread is a passive player that handles
     //  merging incoming membership lists from other neighbors.
     executor.execute(new AsynchronousGossipReceiver());
@@ -345,7 +246,6 @@ public class Node implements NotificationListener {
       node.send_multicast();
     }
 
-//    System.out.println("IN GROUP!!!!!!!!!");
     log.addEvent("IN GROUP!");
     executor.execute(new MembershipGossiper());
 
@@ -369,61 +269,9 @@ public class Node implements NotificationListener {
   }
 
   /**
-   * Merge remote list (received from peer), and our local member list.
-   * Simply, we must update the heartbeats that the remote list has with
-   * our list.  Also, some additional logic is needed to make sure we have
-   * not timed out a member and then immediately received a list with that
-   * member.
-   *
-   * @param remoteList
-   */
-  private void mergeLists(ArrayList<Member> remoteList) {
-
-    synchronized (Node.this.deadList) {
-
-      synchronized (Node.this.memberList) {
-
-        for (Member remoteMember : remoteList) {
-          if (Node.this.memberList.contains(remoteMember)) {
-            Member localMember = Node.this.memberList.get(Node.this.memberList.indexOf(remoteMember));
-
-            if (remoteMember.getHeartbeat() > localMember.getHeartbeat()) {
-              // update local list with latest heartbeat
-              localMember.setHeartbeat(remoteMember.getHeartbeat());
-              // and reset the timeout of that member
-              localMember.resetTimeoutTimer();
-            }
-          } else {
-            // the local list does not contain the remote member
-
-            // the remote member is either brand new, or a previously declared dead member
-            // if its dead, check the heartbeat because it may have come back from the dead
-
-            if (Node.this.deadList.contains(remoteMember)) {
-              Member localDeadMember = Node.this.deadList.get(Node.this.deadList.indexOf(remoteMember));
-              if (remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
-                // it's baa-aack
-                Node.this.deadList.remove(localDeadMember);
-                Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, Gossip.GOSSIP_CLEAN);
-                Node.this.memberList.add(newLocalMember);
-                newLocalMember.startTimeoutTimer();
-              } // else ignore
-            } else {
-              // brand spanking new member - welcome
-              Member newLocalMember = new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), Node.this, Gossip.GOSSIP_CLEAN);
-              Node.this.memberList.add(newLocalMember);
-              newLocalMember.startTimeoutTimer();
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /**
    * All timers associated with a member will trigger this method when it goes
    * off.  The timer will go off if we have not heard from this member in
-   * <code> t_cleanup </code> time.
+   * <code> GOSSIP_CLEAN </code> time.
    */
   @Override
   public void handleNotification(Notification notification, Object handback) {
@@ -431,14 +279,7 @@ public class Node implements NotificationListener {
     Member deadMember = (Member) notification.getUserData();
 
     log.addEvent("DEAD: Dead member detected - " + deadMember);
-//    System.out.println("Dead member detected: " + deadMember);
 
-    synchronized (this.memberList) {
-      this.memberList.remove(deadMember);
-    }
-
-    synchronized (this.deadList) {
-      this.deadList.add(deadMember);
-    }
+    memberManager.killMember(deadMember);
   }
 }
