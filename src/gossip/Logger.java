@@ -1,6 +1,8 @@
 package gossip;
 
 import http.LogServer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,11 +10,33 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Logger {
+
+  class Event {
+    private LogType type;
+    private String msg;
+    public Event(LogType logType, String message) {
+      type = logType;
+      msg = message;
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder str = new StringBuilder();
+      str.append(type)
+         .append("\t")
+         .append(msg);
+      return str.toString();
+    }
+  }
+
   private Node myNode;
-  private ArrayList<String> events;
+  private ArrayList<Event> events;
+  private static final boolean DEBUG = true;
+
   public Logger(Node node) {
+
     myNode = node;
-    events = new ArrayList<String>();
+    events = new ArrayList<Event>();
 
     System.out.println("Start log server");
     try {
@@ -21,75 +45,35 @@ public class Logger {
       e.printStackTrace();
       System.exit(1);
     }
-
-//    System.out.println("Start log timer");
-//    TimerTask timerTask = new TimerTaskExample();
-//    Timer timer = new Timer(true); // run as daemon thread
-//    timer.scheduleAtFixedRate(timerTask, 0, 2000);
   }
 
-  public void addEvent(String str) {
+  synchronized public void addEvent(LogType type, String str) {
     str = str.replaceAll("(\r\n|\n)", "<br />");
     synchronized (Logger.this.events) {
-      events.add(str);
+      Event e = new Event(type, str);
+      if (DEBUG) {
+        System.out.println(e);
+      }
+      events.add(e);
     }
+  }
+
+  synchronized public void addEvent(String str) {
+    addEvent(LogType.INFO, str);
   }
 
   public Node getNodeObj() { return myNode; }
-  public ArrayList<String> getEvents() { return events; }
 
-  public class TimerTaskExample extends TimerTask {
-
-    @Override
-    public void run() {
-      printLogs();
+  @SuppressWarnings("unchecked")
+  synchronized public JSONArray getEventsJSON() {
+    JSONArray json = new JSONArray();
+    for (Event e : events) {
+      JSONObject obj = new JSONObject();
+      obj.put("log_type", e.type.name());
+      obj.put("message", e.msg);
+      json.add(obj);
     }
-
-    // simulate a time consuming task
-    private void printLogs() {
-      clearConsole();
-      StringBuilder str = new StringBuilder();
-      str.append("Member List\n");
-      str.append("===========================================\n");
-      synchronized (myNode.getMembers()) {
-        for (Member m : myNode.getMembers()) {
-          str.append(m.toString()).append("\n");
-        }
-      }
-      str.append("===========================================\n");
-      str.append("\nEvent List\n");
-      str.append("-------------------------------------------\n");
-      synchronized (Logger.this.events) {
-        for (int i = 0; i < events.size(); i++) {
-          str.append("[").append(i).append("]")
-             .append(events.get(i))
-             .append("\n");
-        }
-      }
-      str.append("-------------------------------------------\n")
-         .append("\n\n\n");
-      System.out.println(str.toString());
-    }
-
-    public final void clearConsole()
-    {
-      try
-      {
-        final String os = System.getProperty("os.name");
-
-        if (os.contains("Windows"))
-        {
-          Runtime.getRuntime().exec("cls");
-        }
-        else
-        {
-          Runtime.getRuntime().exec("clear");
-        }
-      }
-      catch (final Exception e)
-      {
-        //  Handle any exceptions.
-      }
-    }
+    events.clear();
+    return json;
   }
 }
