@@ -38,7 +38,6 @@ public class MemberManager {
    * @param remoteList List from remote node
    */
   synchronized public void mergeLists(ArrayList<Member> remoteList) {
-    log.addEvent("MERGE: Merge remote list...");
     // Iterate through every member of the remote list
     for (Member remoteMember : remoteList) {
       if (memberList.contains(remoteMember)) {
@@ -61,7 +60,7 @@ public class MemberManager {
           } // else ignore
         } else {
           // brand spanking new member - welcome
-          log.addEvent("MERGE: Add remote member");
+          log.addEvent("MERGE: Add remote member - " + remoteMember);
           insertMember(remoteMember, false);
         }
       }
@@ -201,7 +200,7 @@ public class MemberManager {
     if (this.memberList.size() > 1) {
       int tries = 10;
       do {
-        int randomNeighborIndex = random.nextInt(this.memberList.size());
+        int randomNeighborIndex = random.nextInt(this.memberList.size() - 1) + 1;
         member = this.memberList.get(randomNeighborIndex);
         if (--tries <= 0) {
           member = null;
