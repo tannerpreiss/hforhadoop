@@ -1,5 +1,7 @@
 package gossip;
 
+import logger.LogType;
+import logger.Logger;
 import org.json.simple.JSONArray;
 
 import java.io.ByteArrayOutputStream;
@@ -16,9 +18,9 @@ public class MemberManager {
   private ArrayList<Member> memberList;
   private ArrayList<Member> deadList;
   private Member me = null;
-  private Node node;
+  private Node   node;
   private Logger log;
-  private Random            random;
+  private Random random;
 
   public MemberManager(Node n, Logger l) {
     node = n;
@@ -42,7 +44,7 @@ public class MemberManager {
     for (Member remoteMember : remoteList) {
       if (memberList.contains(remoteMember)) {
         // The remote member matches a local member. Synchronize heartbeats.
-        log.addEvent("MERGE: Synchronize remote member");
+        log.addInfo("MERGE: Synchronize remote member - " + remoteMember.getAddress());
         synchronizeHeartbeats(remoteMember);
       } else {
         // the local list does not contain the remote member
@@ -55,12 +57,12 @@ public class MemberManager {
           Member localDeadMember = deadList.get(deadList.indexOf(remoteMember));
           if (remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
             // it's baa-aack
-            log.addEvent("MERGE: Revive member");
+            log.addInfo("MERGE: Revive member");
             reviveMember(localDeadMember, remoteMember);
           } // else ignore
         } else {
           // brand spanking new member - welcome
-          log.addEvent("MERGE: Add remote member - " + remoteMember);
+          log.addInfo("MERGE: Add remote member - " + remoteMember);
           insertMember(remoteMember, false);
         }
       }
@@ -73,7 +75,7 @@ public class MemberManager {
    */
   synchronized public void addNewMember(Member newMember, boolean addAsMe) {
     if (memberList.contains(newMember)) {
-      log.addEvent(LogType.WARNING, "Could not add duplicate member - " + newMember);
+      log.addWarning("Could not add duplicate member - " + newMember);
     } else {
       insertMember(newMember, addAsMe);
     }
@@ -92,7 +94,7 @@ public class MemberManager {
     } else {
       me = newLocalMember;
     }
-    log.addEvent("ADD: Added new member to list - " + newLocalMember);
+    log.addInfo("ADD: Added new member to list - " + newLocalMember);
   }
 
   /**
@@ -126,7 +128,7 @@ public class MemberManager {
   synchronized public JSONArray getMembersJSON() {
     JSONArray json = new JSONArray();
     for (Member m : memberList) {
-      json.add(m.toJSON());
+      json.add(m.toJSON(m == me));
     }
     return json;
   }
@@ -137,7 +139,7 @@ public class MemberManager {
   synchronized public void sendMembershipList() {
     // Increase my own heartbeat
 	if (me == null) {
-		log.addEvent(LogType.ERROR, "SEND: I am null!");
+		log.addError("SEND: I am null!");
 	}
     me.setHeartbeat(me.getHeartbeat() + 1);
 
@@ -152,7 +154,7 @@ public class MemberManager {
         oos.writeObject(this.memberList);
         byte[] buf = baos.toByteArray();
         if (buf.length > Gossip.PACKET_SIZE) {
-          log.addEvent(LogType.ERROR, "Member list is larger than packet size");
+          log.addError("Member list is larger than packet size");
         }
 
         // Get address info of target member
@@ -161,14 +163,7 @@ public class MemberManager {
         int port = Integer.parseInt(address.split(":")[1]);
 
         InetAddress dest = InetAddress.getByName(host);
-        log.addEvent("SEND: sending member list to - " + dest);
-
-//					System.out.println("Sending to " + dest);
-//					System.out.println("---------------------");
-//					for (Member m : memberList) {
-//						System.out.println(m);
-//					}
-//					System.out.println("---------------------");
+        log.addInfo("SEND: sending member list to - " + dest);
 
         //simulate some packet loss ~25%
         int percentToSend = random.nextInt(100);
@@ -208,7 +203,7 @@ public class MemberManager {
         }
       } while (member.getAddress().equals(me.getAddress()));
     } else {
-      log.addEvent("ALONE: I'm alone in this world.");
+      log.addInfo("ALONE: I'm alone in this world.");
     }
 
     return member;
@@ -217,6 +212,6 @@ public class MemberManager {
   synchronized public void killMember(Member m) {
     memberList.remove(m);
     deadList.add(m);
-    log.addEvent("KILL: killed member - " + m);
+    log.addInfo("KILL: killed member - " + m);
   }
 }

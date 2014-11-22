@@ -4,7 +4,6 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import gossip.Logger;
 import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,11 +19,11 @@ public class LogServer {
 
   private Logger my_log;
 
-  public LogServer(Logger logger) throws Exception {
+  public LogServer(Logger logger, int port) throws Exception {
     my_log = logger;
 
     // Configure and start the server
-    HttpServer server = HttpServer.create(new InetSocketAddress(8001), 0);
+    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     // Create members context
     server.createContext(Handlers.MEMBERS.getPath(),
         new MyHandler(Handlers.MEMBERS));
@@ -85,8 +84,7 @@ public class LogServer {
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
 
-      Node node = my_log.getNodeObj();
-      JSONArray arr = node.getMemberManager().getMembersJSON();
+      JSONArray arr = my_log.getMembersJSON();
       JSONObject obj = new JSONObject();
       obj.put("member_list", arr);
 

@@ -47,20 +47,15 @@ public class Member implements Serializable {
 
 	@Override
 	public String toString() {
-    StringBuilder str = new StringBuilder();
-    str.append("addr: ")
-       .append(address).append(", ")
-       .append("h_beat: ")
-       .append(heartbeat);
-    return str.toString();
+    return "addr: " + address + ", h_beat" + heartbeat;
 	}
 
   @SuppressWarnings("unchecked")
-  public JSONObject toJSON() {
+  public JSONObject toJSON(boolean isMe) {
     JSONObject obj = new JSONObject();
     obj.put("address", address);
     obj.put("heartbeat", heartbeat);
-    obj.put("is_me", "");
+    obj.put("is_me", isMe);
     return obj;
   }
 

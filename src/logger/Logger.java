@@ -1,6 +1,6 @@
 package logger;
 
-import gossip.LogType;
+import gossip.Config;
 import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,48 +20,52 @@ public class Logger {
 
     @Override
     public String toString() {
-      StringBuilder str = new StringBuilder();
-      str.append(type)
-         .append("\t")
-         .append(msg);
-      return str.toString();
+      return type + "\t" + msg;
     }
   }
 
   private Node             myNode;
   private ArrayList<Event> events;
-  private static final boolean DEBUG = true;
+  private boolean printToConsole = true;
 
-  public Logger(Node node) {
+  public Logger(boolean printToConsole, boolean enableServer, int serverPort) {
+    this.printToConsole = printToConsole;
 
-    myNode = node;
-    events = new ArrayList<Event>();
-
-    System.out.println("Start log server");
-    try {
-      LogServer server = new LogServer(this);
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
+    if (enableServer) {
+      System.out.println("Start log server");
+      try {
+        LogServer server = new LogServer(this, serverPort);
+      } catch (Exception e) {
+        e.printStackTrace();
+        System.exit(1);
+      }
     }
+
+    events = new ArrayList<Event>();
   }
 
   synchronized public void addEvent(LogType type, String str) {
     str = str.replaceAll("(\r\n|\n)", "<br />");
-    synchronized (Logger.this.events) {
-      Event e = new Event(type, str);
-      if (DEBUG) {
-        System.out.println(e);
-      }
-      events.add(e);
+    Event e = new Event(type, str);
+    if (printToConsole) {
+      System.out.println(e);
     }
+    events.add(e);
   }
 
-  synchronized public void addEvent(String str) {
+  synchronized public void addInfo(String str) {
     addEvent(LogType.INFO, str);
   }
 
-  public Node getNodeObj() { return myNode; }
+  synchronized public void addWarning(String str) { addEvent(LogType.WARNING, str); }
+
+  synchronized public void addError(String str) { addEvent(LogType.ERROR, str); }
+
+  public void setNodeObj(Node n) { myNode = n; }
+
+  public JSONArray getMembersJSON() {
+    return myNode.getMemberManager().getMembersJSON();
+  }
 
   @SuppressWarnings("unchecked")
   synchronized public JSONArray getEventsJSON() {

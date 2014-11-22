@@ -1,11 +1,12 @@
 package gossip;
 
+import logger.Logger;
+
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -13,13 +14,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Node implements NotificationListener {
 
-  private MemberManager memberManager;
-  private DatagramSocket    gossipServer;
-  private MulticastSocket   multicastServer;
-  private String            myAddress;
-  private AtomicBoolean     inGroup;
-  private ExecutorService   executor;
-  private Logger            log;
+  private MemberManager   memberManager;
+  private DatagramSocket  gossipServer;
+  private MulticastSocket multicastServer;
+  private String          myAddress;
+  private AtomicBoolean   inGroup;
+  private ExecutorService executor;
+  private Logger          log;
+  private Config          config;
+
   /**
    * Setup the client's lists, gossiping parameters, and parse the startup config file.
    *
@@ -27,7 +30,7 @@ public class Node implements NotificationListener {
    * @throws InterruptedException
    * @throws UnknownHostException
    */
-  public Node() throws SocketException, InterruptedException, UnknownHostException {
+  public Node(Logger l, Config c) throws SocketException, InterruptedException, UnknownHostException {
 
     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
       public void run() {
@@ -35,7 +38,9 @@ public class Node implements NotificationListener {
       }
     }));
 
-    log = new Logger(this);
+    log = l;
+    log.setNodeObj(this);
+    config = c;
     memberManager = new MemberManager(this, log);
     inGroup = new AtomicBoolean(false);
 
@@ -44,27 +49,27 @@ public class Node implements NotificationListener {
     InetAddress group;
 
     try {
-      group = InetAddress.getByName(Gossip.MULTICAST_ADDRESS);
+      group = InetAddress.getByName(config.MULTICAST_ADDRESS);
 
-      networkInterface = NetworkInterface.getByName(Gossip.INTERFACE_NAME);
-      address = new InetSocketAddress(group, Gossip.MULTICAST_PORT);
+      networkInterface = NetworkInterface.getByName(config.INTERFACE_NAME);
+      address = new InetSocketAddress(group, config.MULTICAST_PORT);
 
-      multicastServer = new MulticastSocket(Gossip.MULTICAST_PORT);
+      multicastServer = new MulticastSocket(config.MULTICAST_PORT);
       multicastServer.joinGroup(address, networkInterface);
     } catch (Exception e) {
       e.printStackTrace();
     }
 
     String myIpAddress = InetAddress.getLocalHost().getHostAddress();
-    this.myAddress = myIpAddress + ":" + Gossip.GOSSIP_PORT;
+    this.myAddress = myIpAddress + ":" + config.GOSSIP_PORT;
 
-    gossipServer = new DatagramSocket(Gossip.GOSSIP_PORT);
+    gossipServer = new DatagramSocket(config.GOSSIP_PORT);
 
     executor = Executors.newCachedThreadPool();
 
-    Member me = new Member(this.myAddress, 0, this, Gossip.GOSSIP_CLEAN);
+    Member me = new Member(this.myAddress, 0, this, config.GOSSIP_CLEAN);
     memberManager.addNewMember(me, true);
-    log.addEvent("ADD: Add myself to the member list - " + me);
+    log.addInfo("ADD: Add myself to the member list - " + me);
   }
 
   public MemberManager getMemberManager() { return memberManager; }
@@ -102,7 +107,7 @@ public class Node implements NotificationListener {
     public void run() {
       while (this.keepRunning.get()) {
         try {
-          TimeUnit.MILLISECONDS.sleep(Gossip.GOSSIP_PING);
+          TimeUnit.MILLISECONDS.sleep(config.GOSSIP_PING);
           memberManager.sendMembershipList();
         } catch (InterruptedException e) {
           // TODO: handle exception
@@ -136,28 +141,27 @@ public class Node implements NotificationListener {
     @Override
     public void run() {
       while (keepRunning.get()) {
-        // --------------------- RECEIVE ON MULTICAST ---------------------
         DatagramPacket recv = null;
         String newNodeIp = "";
         try {
           do {
             // get their responses!
-            byte[] buf = new byte[Gossip.PACKET_SIZE];
+            byte[] buf = new byte[config.PACKET_SIZE];
             recv = new DatagramPacket(buf, buf.length);
-            log.addEvent("WAIT: Waiting for multicast message");
+            log.addInfo("WAIT: Waiting for multicast message");
 
             multicastServer.receive(recv);
 
             newNodeIp = Gossip.getAddress(recv);
-            log.addEvent("RECV: Received multicast message - " + newNodeIp);
+            log.addInfo("RECV: Received multicast message - " + newNodeIp);
 
           } while (((newNodeIp).equals(myAddress)));
         } catch (IOException e) {
-          log.addEvent(LogType.ERROR, "Error receiving datagram packet: " + e.getMessage());
+          log.addError("Error receiving datagram packet: " + e.getMessage());
           e.printStackTrace();
         }
 
-        Member newNode = new Member(newNodeIp, 0, myNode, Gossip.GOSSIP_CLEAN);
+        Member newNode = new Member(newNodeIp, 0, myNode, config.GOSSIP_CLEAN);
 
         markInGroup(); // Change to inGroup state
         memberManager.addNewMember(newNode, false); // Add new member to list
@@ -189,7 +193,7 @@ public class Node implements NotificationListener {
       while (keepRunning.get()) {
         try {
           //XXX: be mindful of this array size for later
-          byte[] buf = new byte[Gossip.PACKET_SIZE];
+          byte[] buf = new byte[config.PACKET_SIZE];
           DatagramPacket p = new DatagramPacket(buf, buf.length);
           gossipServer.receive(p);
 
@@ -200,7 +204,6 @@ public class Node implements NotificationListener {
 
           Object readObject = ois.readObject();
           if (readObject instanceof ArrayList<?>) {
-//						inGroup = true;
             ArrayList<Member> list = (ArrayList<Member>) readObject;
 
             StringBuilder str = new StringBuilder();
@@ -209,7 +212,7 @@ public class Node implements NotificationListener {
             for (Member m : list) {
               str.append(m).append("\n");
             }
-            log.addEvent(str.toString());
+            log.addInfo(str.toString());
 
             markInGroup();
             // Merge our list with the one we just received
@@ -217,11 +220,11 @@ public class Node implements NotificationListener {
           }
 
         } catch (IOException e) {
-          log.addEvent(LogType.ERROR, "Gossip receiver IO error. Stopping thread...");
+          log.addError("Gossip receiver IO error. Stopping thread...");
           e.printStackTrace();
           keepRunning.set(false);
         } catch (ClassNotFoundException e) {
-          // TODO Auto-generated catch block
+          log.addError(e.getMessage());
           e.printStackTrace();
         }
       }
@@ -247,7 +250,7 @@ public class Node implements NotificationListener {
       node.send_multicast();
     }
 
-    log.addEvent("IN GROUP!");
+    log.addInfo("IN GROUP!");
     executor.execute(new MembershipGossiper());
 
     // keep the main thread around
@@ -260,8 +263,8 @@ public class Node implements NotificationListener {
     // join a Multicast group and send the group salutations
     try {
       String msg = "Hello";
-      InetAddress group = InetAddress.getByName(Gossip.MULTICAST_ADDRESS);
-      DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, Gossip.MULTICAST_PORT);
+      InetAddress group = InetAddress.getByName(config.MULTICAST_ADDRESS);
+      DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, config.MULTICAST_PORT);
       multicastServer.send(hi);
       Thread.sleep(3000);
     } catch (Exception e) {
@@ -279,7 +282,7 @@ public class Node implements NotificationListener {
 
     Member deadMember = (Member) notification.getUserData();
 
-    log.addEvent("DEAD: Dead member detected - " + deadMember);
+    log.addInfo("DEAD: Dead member detected - " + deadMember);
 
     memberManager.killMember(deadMember);
   }
