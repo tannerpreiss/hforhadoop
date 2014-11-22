@@ -14,7 +14,7 @@ public class Gossip {
   public static void main(String args[]) throws InterruptedException, SocketException, UnknownHostException {
     initConfig();
     Logger log = getLogger();
-    Node node = new Node(log, config);
+    Node node = new Node(log);
     node.start_listeners(node);
   }
 

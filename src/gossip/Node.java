@@ -21,7 +21,7 @@ public class Node implements NotificationListener {
   private AtomicBoolean   inGroup;
   private ExecutorService executor;
   private Logger          log;
-  private Config          config;
+  private Config          config = Gossip.config;
 
   /**
    * Setup the client's lists, gossiping parameters, and parse the startup config file.
@@ -30,7 +30,7 @@ public class Node implements NotificationListener {
    * @throws InterruptedException
    * @throws UnknownHostException
    */
-  public Node(Logger l, Config c) throws SocketException, InterruptedException, UnknownHostException {
+  public Node(Logger l) throws SocketException, InterruptedException, UnknownHostException {
 
     Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
       public void run() {
@@ -40,7 +40,6 @@ public class Node implements NotificationListener {
 
     log = l;
     log.setNodeObj(this);
-    config = c;
     memberManager = new MemberManager(this, log);
     inGroup = new AtomicBoolean(false);
 

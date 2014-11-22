@@ -21,6 +21,7 @@ public class MemberManager {
   private Node   node;
   private Logger log;
   private Random random;
+  private Config config = Gossip.config;
 
   public MemberManager(Node n, Logger l) {
     node = n;
@@ -87,7 +88,7 @@ public class MemberManager {
    */
   synchronized private void insertMember(Member newMember, boolean addAsMe) {
     Member newLocalMember =
-      new Member(newMember.getAddress(), newMember.getHeartbeat(), node, Gossip.GOSSIP_CLEAN);
+      new Member(newMember.getAddress(), newMember.getHeartbeat(), node, config.GOSSIP_CLEAN);
     memberList.add(newLocalMember);
     if (!addAsMe) {
       newLocalMember.startTimeoutTimer();
@@ -119,7 +120,7 @@ public class MemberManager {
   synchronized public void reviveMember(Member localDeadMember, Member remoteMember) {
     deadList.remove(localDeadMember);
     Member newLocalMember =
-      new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), node, Gossip.GOSSIP_CLEAN);
+      new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), node, config.GOSSIP_CLEAN);
     memberList.add(newLocalMember);
     newLocalMember.startTimeoutTimer();
   }
@@ -153,7 +154,7 @@ public class MemberManager {
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(this.memberList);
         byte[] buf = baos.toByteArray();
-        if (buf.length > Gossip.PACKET_SIZE) {
+        if (buf.length > config.PACKET_SIZE) {
           log.addError("Member list is larger than packet size");
         }
 

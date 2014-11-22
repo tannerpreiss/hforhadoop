@@ -3,12 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Gossip.java" afterPath="$PROJECT_DIR$/src/gossip/Gossip.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/logger/LogServer.java" afterPath="$PROJECT_DIR$/src/logger/LogServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/logger/Logger.java" afterPath="$PROJECT_DIR$/src/logger/Logger.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Member.java" afterPath="$PROJECT_DIR$/src/gossip/Member.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/MemberManager.java" afterPath="$PROJECT_DIR$/src/gossip/MemberManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Node.java" afterPath="$PROJECT_DIR$/src/gossip/Node.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cs_4284.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,21 +32,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Gossip.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Gossip.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/gossip/Gossip.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="32" max-vertical-offset="935">
-              <caret line="21" column="57" selection-start-line="21" selection-start-column="57" selection-end-line="21" selection-end-column="57" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Config.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/gossip/Config.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.13178295" vertical-offset="0" max-vertical-offset="903">
-              <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.25963148" vertical-offset="32" max-vertical-offset="935">
+              <caret line="16" column="30" selection-start-line="16" selection-start-column="30" selection-end-line="16" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -76,16 +62,14 @@
       <file leaf-file-name="MemberManager.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/gossip/MemberManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="913" max-vertical-offset="2805">
-              <caret line="131" column="5" selection-start-line="131" selection-start-column="5" selection-end-line="131" selection-end-column="5" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="1739" max-vertical-offset="3094">
+              <caret line="156" column="31" selection-start-line="156" selection-start-column="31" selection-end-line="156" selection-end-column="31" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#mergeLists#0;class#MemberManager#0" expanded="false" />
                 <element signature="method#addNewMember#0;class#MemberManager#0" expanded="false" />
-                <element signature="method#insertMember#0;class#MemberManager#0" expanded="false" />
                 <element signature="method#synchronizeHeartbeats#0;class#MemberManager#0" expanded="false" />
-                <element signature="method#reviveMember#0;class#MemberManager#0" expanded="false" />
-                <element signature="e#4407#4437#0" expanded="true" />
+                <element signature="e#4448#4478#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -104,8 +88,8 @@
       <file leaf-file-name="Node.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4777">
-              <caret line="23" column="33" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4760">
+              <caret line="23" column="48" selection-start-line="23" selection-start-column="48" selection-end-line="23" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -136,11 +120,11 @@
       <list>
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/logger/LogServer.java" />
-        <option value="$PROJECT_DIR$/src/gossip/MemberManager.java" />
         <option value="$PROJECT_DIR$/src/gossip/Member.java" />
-        <option value="$PROJECT_DIR$/src/gossip/Node.java" />
         <option value="$PROJECT_DIR$/src/gossip/Config.java" />
         <option value="$PROJECT_DIR$/src/logger/Logger.java" />
+        <option value="$PROJECT_DIR$/src/gossip/MemberManager.java" />
+        <option value="$PROJECT_DIR$/src/gossip/Node.java" />
         <option value="$PROJECT_DIR$/src/gossip/Gossip.java" />
       </list>
     </option>
@@ -533,12 +517,12 @@
       <workItem from="1416688287443" duration="27000" />
       <workItem from="1416688315242" duration="120000" />
       <workItem from="1416688454047" duration="77000" />
-      <workItem from="1416688544075" duration="4703000" />
+      <workItem from="1416688544075" duration="4853000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4927000" />
+    <option name="totallyTimeSpent" value="5077000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="1023" extended-state="6" />
@@ -558,7 +542,7 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32867885" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32867885" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1978022" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32967034" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -627,30 +611,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/gossip/MemberManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="913" max-vertical-offset="2805">
-          <caret line="131" column="5" selection-start-line="131" selection-start-column="5" selection-end-line="131" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#mergeLists#0;class#MemberManager#0" expanded="false" />
-            <element signature="method#addNewMember#0;class#MemberManager#0" expanded="false" />
-            <element signature="method#insertMember#0;class#MemberManager#0" expanded="false" />
-            <element signature="method#synchronizeHeartbeats#0;class#MemberManager#0" expanded="false" />
-            <element signature="method#reviveMember#0;class#MemberManager#0" expanded="false" />
-            <element signature="e#4407#4437#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4777">
-          <caret line="23" column="33" selection-start-line="23" selection-start-column="33" selection-end-line="23" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/logger/Logger.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1496">
@@ -666,18 +626,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/gossip/Gossip.java">
+    <entry file="file://$PROJECT_DIR$/src/gossip/Config.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="32" max-vertical-offset="935">
-          <caret line="21" column="57" selection-start-line="21" selection-start-column="57" selection-end-line="21" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.07530454" vertical-offset="0" max-vertical-offset="903">
+          <caret line="4" column="3" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/gossip/Config.java">
+    <entry file="file://$PROJECT_DIR$/src/gossip/MemberManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.13178295" vertical-offset="0" max-vertical-offset="903">
-          <caret line="7" column="22" selection-start-line="7" selection-start-column="22" selection-end-line="7" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1739" max-vertical-offset="3094">
+          <caret line="156" column="31" selection-start-line="156" selection-start-column="31" selection-end-line="156" selection-end-column="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#mergeLists#0;class#MemberManager#0" expanded="false" />
+            <element signature="method#addNewMember#0;class#MemberManager#0" expanded="false" />
+            <element signature="method#synchronizeHeartbeats#0;class#MemberManager#0" expanded="false" />
+            <element signature="e#4448#4478#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4760">
+          <caret line="23" column="48" selection-start-line="23" selection-start-column="48" selection-end-line="23" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gossip/Gossip.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.25963148" vertical-offset="32" max-vertical-offset="935">
+          <caret line="16" column="30" selection-start-line="16" selection-start-column="30" selection-end-line="16" selection-end-column="30" />
           <folding />
         </state>
       </provider>
