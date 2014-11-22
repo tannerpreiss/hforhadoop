@@ -1,6 +1,7 @@
-package gossip;
+package logger;
 
-import logger.LogServer;
+import gossip.LogType;
+import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -10,7 +11,8 @@ public class Logger {
 
   class Event {
     private LogType type;
-    private String msg;
+    private String  msg;
+
     public Event(LogType logType, String message) {
       type = logType;
       msg = message;
@@ -26,7 +28,7 @@ public class Logger {
     }
   }
 
-  private Node myNode;
+  private Node             myNode;
   private ArrayList<Event> events;
   private static final boolean DEBUG = true;
 

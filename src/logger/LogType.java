@@ -1,4 +1,4 @@
-package gossip;
+package logger;
 
 public enum LogType {
   INFO,
