@@ -1,13 +1,10 @@
 package gossip;
 
-import http.LogServer;
+import logger.LogServer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Logger {
 

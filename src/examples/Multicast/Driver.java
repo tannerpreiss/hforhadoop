@@ -1,9 +1,6 @@
-package Multicast;
+package examples.Multicast;
 
-import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Collections;
-import java.util.Enumeration;
 
 /**
  * Created by Rich on 10/26/14.

@@ -1,4 +1,4 @@
-package Multicast;
+package examples.Multicast;
 
 import java.net.*;
 

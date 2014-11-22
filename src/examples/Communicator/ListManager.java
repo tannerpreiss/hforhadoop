@@ -1,4 +1,4 @@
-package Communicator;
+package examples.Communicator;
 
 public class ListManager implements Runnable {
   private MulticastListener multicastListener;

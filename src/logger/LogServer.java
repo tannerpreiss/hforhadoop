@@ -1,11 +1,10 @@
-package http;
+package logger;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import gossip.Logger;
-import gossip.Member;
 import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,7 +13,6 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

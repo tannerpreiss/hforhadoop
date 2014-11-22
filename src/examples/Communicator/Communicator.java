@@ -1,4 +1,4 @@
-package Communicator;
+package examples.Communicator;
 
 public class Communicator {
   public static void main(String args[]) {

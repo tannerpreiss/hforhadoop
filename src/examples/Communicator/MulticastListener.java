@@ -1,11 +1,8 @@
-package Communicator;
+package examples.Communicator;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Vector;
 
 public class MulticastListener implements Runnable {
