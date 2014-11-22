@@ -2,11 +2,3 @@
 # Compiled files
 bin
 out
-
-# Mac hidden file
-.DS_Store
-
-# JetBrains IDE's
-.idea
-
-*.iml
