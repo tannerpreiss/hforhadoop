@@ -4,25 +4,28 @@ import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
+import java.util.UUID;
 
 public class Member implements Serializable {
 
-	private static final long serialVersionUID = 8387950590016941525L;
+  private static final long serialVersionUID = 8387950590016941525L;
 
-	/**
-	 * The member address in the form IP:port
-	 * Similar to the toString in {@link InetSocketAddress}
-	 */
-	private String address;
-	private int heartbeat;
+  /**
+   * The member address in the form IP:port
+   * Similar to the toString in {@link InetSocketAddress}
+   */
+  private String address;
+  private UUID   uuid;
+  private int    heartbeat;
 
   // Set timer as transient so that it is not sent across the network.
-	private transient TimeoutTimer timeoutTimer;
+  private transient TimeoutTimer timeoutTimer;
 
-	public Member(String address, int heartbeat, Node node, int t_cleanup) {
-		this.address = address;
-		this.heartbeat = heartbeat;
-		this.timeoutTimer = new TimeoutTimer(t_cleanup, node, this);
+  public Member(String address, int heartbeat, Node node, int t_cleanup) {
+    this.address = address;
+    this.uuid = UUID.randomUUID();
+    this.heartbeat = heartbeat;
+    this.timeoutTimer = new TimeoutTimer(t_cleanup, node, this);
 	}
 
 	public void startTimeoutTimer() {
@@ -93,6 +96,9 @@ public class Member implements Serializable {
 		} else if (!address.equals(other.address)) {
 			return false;
 		}
+    if (uuid.compareTo(other.uuid) != 0) {
+      return false;
+    }
 		return true;
 	}
 }
