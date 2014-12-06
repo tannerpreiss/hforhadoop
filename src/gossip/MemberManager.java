@@ -88,7 +88,7 @@ public class MemberManager {
    */
   synchronized public void addNewMember(Member newMember, boolean addAsMe) {
     if (cluster_info.hasMember(newMember)) {
-      log.addWarning("Could not add duplicate member - " + newMember);
+      log.addWarning("ADD: Could not add duplicate member - " + newMember);
     } else {
       insertMember(newMember, addAsMe);
     }
@@ -243,5 +243,9 @@ public class MemberManager {
 //    memberList.remove(m);
     deadList.add(m);
     log.addInfo("KILL: killed member - " + m);
+  }
+
+  synchronized public boolean hasElected() {
+    return cluster_info.hasElectedMaster();
   }
 }

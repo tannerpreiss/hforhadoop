@@ -72,7 +72,7 @@ public class Member implements Serializable {
     return "addr: " + address +
            ", h_beat: " + heartbeat +
            ", time: " + timestamp +
-           (is_master ? " MASTER" : "");
+           (is_master ? " M" : "");
 	}
 
   @SuppressWarnings("unchecked")

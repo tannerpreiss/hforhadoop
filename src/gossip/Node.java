@@ -1,12 +1,12 @@
 package gossip;
 
+import hadoop.Hadoop;
 import logger.Logger;
 
 import javax.management.Notification;
 import javax.management.NotificationListener;
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +22,7 @@ public class Node implements NotificationListener {
   private ExecutorService executor;
   private Logger          log;
   private Config          config = Gossip.config;
+  private Hadoop hadoop;
 
   /**
    * Setup the client's lists, gossiping parameters, and parse the startup config file.
@@ -41,6 +42,7 @@ public class Node implements NotificationListener {
     log = l;
     log.setNodeObj(this);
     memberManager = new MemberManager(this, log);
+    hadoop = new Hadoop(memberManager, log);
     inGroup = new AtomicBoolean(false);
 
     NetworkInterface networkInterface;
@@ -65,6 +67,7 @@ public class Node implements NotificationListener {
     gossipServer = new DatagramSocket(config.GOSSIP_PORT);
 
     executor = Executors.newCachedThreadPool();
+    executor.execute(hadoop);
 
     Member me = new Member(this.myAddress, 0, this, config.GOSSIP_CLEAN, System.currentTimeMillis());
     memberManager.addNewMember(me, true);
@@ -221,24 +224,13 @@ public class Node implements NotificationListener {
                      info.toString());
           markInGroup();
           memberManager.mergeLists(info);
-
-//          Object readObject = ois.readObject();
-//          if (readObject instanceof ArrayList<?>) {
-//            ArrayList<Member> list = (ArrayList<Member>) readObject;
-//
-//            StringBuilder str = new StringBuilder();
-//            str.append("RECV: Receiving member list\n From: ")
-//               .append(p.getAddress()).append("\nList:\n");
-//            for (Member m : list) {
-//              str.append(m).append("\n");
-//            }
-//            log.addInfo(str.toString());
-//
-//            markInGroup();
-//            // Merge our list with the one we just received
-//            memberManager.mergeLists(list);
-//          }
-
+          // Run Hadoop if necessary
+          if (!hadoop.isRunning()) {
+            if (memberManager.hasElected()) {
+              if (memberManager.getMe().isMaster()) { hadoop.setAsMaster(); }
+              hadoop.startHadoop();
+            }
+          }
         } catch (IOException e) {
           log.addError("Gossip receiver IO error. Stopping thread...");
           e.printStackTrace();

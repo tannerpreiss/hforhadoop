@@ -54,6 +54,7 @@ public class ClusterInfo implements Serializable {
   }
 
   synchronized public void electMaster(ClusterInfo remoteInfo) {
+    if (master_elected) { return; }
     // Check if remote node has already elected a master
     if (remoteInfo.hasElectedMaster()) {
       log.addInfo("ELECT: Remote has already elected master. Update local.");

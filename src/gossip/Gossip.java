@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class Gossip {
 
-  public static Config config = new Config();
+  public static Config        config  = new Config();
 
   public static void main(String args[]) throws InterruptedException, SocketException, UnknownHostException {
     initConfig();
@@ -21,7 +21,7 @@ public class Gossip {
   public static void initConfig() {
     config.PORT_NUM          = 222; // Default port number for requests
     config.GOSSIP_PING       = 5000; // Time between gossip pings
-    config.GOSSIP_CLEAN      = 400000;  // Time for unresponsive nodes
+    config.GOSSIP_CLEAN      = 40000;  // Time for unresponsive nodes
     config.MULTICAST_PORT    = 6789; // Port for multicast requests
     config.MULTICAST_ADDRESS = "228.5.6.7"; // Address for multicast request
     config.MULTICAST_WAIT    = 5000; // Wait time between multicast request

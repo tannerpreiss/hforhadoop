@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
  */
 public class Shell {
 
-  public String executeCommand(String command) {
+  public static String executeCommand(String command) {
 
     StringBuffer output = new StringBuffer();
 
