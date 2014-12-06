@@ -5,39 +5,39 @@ package vm_control;
  */
 public class VirtualMachineController {
 
-   private Shell shell;
+  private Shell shell;
 
-   public VirtualMachineController() {
-      shell = new Shell();
-   }
+  public VirtualMachineController() {
+    shell = new Shell();
+  }
 
-   public bool startVirtualMachine(VirtualMachine virtualMachine) {
-      String startCmd = "VBoxHeadless --startvm \"" + virtualMachine.getVirtualMachineName()  + "\"";
+  public boolean startVirtualMachine(VirtualMachine virtualMachine) {
+    String startCmd = "VBoxHeadless --startvm \"" + virtualMachine.getVirtualMachineName() + "\"";
 
-      String output = shell.executeCommand(startCmd);
-      return True;
-   }
+    String output = shell.executeCommand(startCmd);
+    return true;
+  }
 
-   public bool shutdownVirtualMachine(VirtualMachine virtualMachine) {
-      //TODO: This needs to be a graceful shutdown.
-      //TODO: shutdown hadoop command before virtual machine shutdown.
+  public boolean shutdownVirtualMachine(VirtualMachine virtualMachine) throws InterruptedException {
+    //TODO: This needs to be a graceful shutdown.
+    //TODO: shutdown hadoop command before virtual machine shutdown.
 
-      String shutdownCmd = "VBoxManage controlvm " + virtualMachine.getVirtualMachineName() +
-              " acpipowerbutton";
+    String shutdownCmd = "VBoxManage controlvm " + virtualMachine.getVirtualMachineName() +
+                         " acpipowerbutton";
 
-      shell.executeCommand(shutdownCmd);
+    shell.executeCommand(shutdownCmd);
 
-      String checkRunningVMsCmd = "VBoxManage list runningvms";
+    String checkRunningVMsCmd = "VBoxManage list runningvms";
 
-      while (shell.executeCommand(checkRunningVMsCmd) != "") {
-         System.out.println("Waiting for VM to graceful shutdown...");
-         Thread.sleep(3);
-      }
+    while (!shell.executeCommand(checkRunningVMsCmd).equals("")) {
+      System.out.println("Waiting for VM to graceful shutdown...");
+      Thread.sleep(3);
+    }
+    return true;
+  }
 
-   }
-
-   public int notifyOfDeadNeighbor(VirtualMachine virtualMachine) {
-
-   }
+  public int notifyOfDeadNeighbor(VirtualMachine virtualMachine) {
+    return 0;
+  }
 
 }

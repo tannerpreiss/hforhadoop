@@ -17,7 +17,7 @@ public class VirtualMachine {
    }
 
 
-   public getVirtualMachineAddress () {
+   public String getVirtualMachineAddress () {
       if (machineAddress == null) {
          machineAddress = getAddressFromVBoxManage();
       }
@@ -30,7 +30,7 @@ public class VirtualMachine {
 
       String vBoxAddressCmd = "VBoxManage guestproperty get "
               + machineName + " \"/VirtualBox/GuestInfo/Net/0/V4/IP\" | " +
-              "grep -o -E \'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\'";
+              "grep -o -E \'[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\'";
 
       return  tempShell.executeCommand(vBoxAddressCmd);
    }
@@ -46,7 +46,7 @@ public class VirtualMachine {
 
    }
 
-   public String getVirtualMachineName {
+   public String getVirtualMachineName() {
       return machineName;
    }
 

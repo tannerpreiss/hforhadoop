@@ -2,7 +2,7 @@
 var keeprunning_members = false;
 var keeprunning_events = false;
 var event_counter = 0;
-var polling_freq = 2500;
+var polling_freq = 1000;
 var polling_url = "localhost:8001";
 var member_uri = "members";
 var event_uri = "events";
@@ -18,7 +18,15 @@ $(document).ready(function() {
   $('#toggle_events_polling').click(toggle_ajax_events);
   $('#toggle_auto_scroll').click(toggle_auto_scroll);
   $('.toggle_events').click(toggle_events_visibility);
+  $('#clear_data').click(clear_data);
 });
+
+function clear_data() {
+  // Clear member data
+  $('.members .member_table tbody').replaceWith($('<tbody></tbody>'));
+  // Clear event data
+  $('.events .event_table tbody').replaceWith($('<tbody></tbody>'));
+}
 
 function toggle_events_visibility(e) {
   var elem = $(this);
@@ -148,8 +156,15 @@ function refresh_data_member(data) {
   for (var i = 0; i < mem_list.length; i++) {
     var addr = col.clone().html(mem_list[i].address);
     var beat = col.clone().html(mem_list[i].heartbeat);
-    var is_me = col.clone().html(mem_list[i].is_me);
-    tbody.append(row.clone().append(addr, beat, is_me));
+    var time = col.clone().html(mem_list[i].timestamp);
+    var curr_row = row.clone().append(addr, beat, time);
+    if (mem_list[i].is_me) {
+      curr_row.addClass("me");
+    }
+    if (mem_list[i].is_master) {
+      curr_row.addClass("master");
+    }
+    tbody.append(curr_row);
   }
 
   // Add time stamp
@@ -164,8 +179,7 @@ function refresh_data_member(data) {
 }
 
 function refresh_data_event(data) {
-  var table = $('.event_table');
-  var tbody = $('.event_table tbody');
+  var tbody = $('.events .event_table tbody');
   var row = $('<tr></tr>');
   var col = $('<td></td>');
 
@@ -177,12 +191,13 @@ function refresh_data_event(data) {
     var event = col.clone().html(events[i].message);
     var row_curr = row.clone().append(counter, type, event);
     row_curr.attr("data-event-type", event_type);
-    tbody.append(row_curr);
+    tbody.prepend(row_curr);
     event_counter++;
   }
 
   if (auto_scroll) {
-    var container = $('.events');
-    container.animate({ scrollTop: container[0].scrollHeight }, "slow");
+    var container = $('.events .event_table tbody');
+//    container.animate({ scrollTop: container[0].scrollHeight }, "slow");
+    container.animate({ scrollTop: 0 }, "slow");
   }
 }

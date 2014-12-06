@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="cs_4284:jar">
+    <output-path>$USER_HOME$/Desktop</output-path>
+    <root id="archive" name="cs_4284.jar">
+      <element id="module-output" name="cs_4284" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-simple-1.1.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

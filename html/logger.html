@@ -3,16 +3,16 @@
 <head lang="en">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ephemeral Hadoop</title>
+  <title>H for Hadoop</title>
 
   <!-- Include third party stylesheets -->
-  <link rel="stylesheet" href="css/normalize.css"/>
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css" type="text/css"/>
 
   <!-- Include custom stylesheets-->
   <link rel="stylesheet" href="css/logger/styles.css"/>
 
   <!-- Include third party scripts -->
-  <script src="js/jquery-2.1.1.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
   <script src="js/logger/script.js"></script>
 </head>
@@ -26,6 +26,7 @@
       <button id="toggle_members_polling">Start Members</button>
       <button id="toggle_events_polling">Start Events</button>
       <button id="toggle_auto_scroll">Disable Auto Scroll</button>
+      <button id="clear_data">Clear Data</button>
       <button class="toggle_events" id="toggle_info" data-type="info">Toggle Info</button>
       <button class="toggle_events" id="toggle_warning" data-type="warning">Toggle Warnings</button>
       <button class="toggle_events" id="toggle_error" data-type="error">Toggle Error</button>
@@ -33,7 +34,7 @@
     <div class="input_container">
       <div class="input_group">
         <label for="polling_freq">Polling Freq. (Milliseconds)</label>
-        <input id="polling_freq" type="text" value="2500"/>
+        <input id="polling_freq" type="text" value="1000"/>
       </div>
       <div class="input_group">
         <label for="polling_url">Polling URL</label>
@@ -42,19 +43,17 @@
     </div>
   </div>
   <div class="log_info">
-    <div class="list_container">
-      <div class="members">
-        <table class="member_table">
-          <thead>
-          <tr>
-            <th>Address</th>
-            <th>Heart Beats</th>
-            <th>Is me?</th>
-          </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+    <div class="members">
+      <table class="member_table">
+        <thead>
+        <tr>
+          <th>Address</th>
+          <th>Heart Beats</th>
+          <th>Time</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
     <div class="events">
       <table class="event_table">

@@ -66,7 +66,7 @@ public class Node implements NotificationListener {
 
     executor = Executors.newCachedThreadPool();
 
-    Member me = new Member(this.myAddress, 0, this, config.GOSSIP_CLEAN);
+    Member me = new Member(this.myAddress, 0, this, config.GOSSIP_CLEAN, System.currentTimeMillis());
     memberManager.addNewMember(me, true);
     log.addInfo("ADD: Add myself to the member list - " + me);
   }
@@ -107,7 +107,7 @@ public class Node implements NotificationListener {
       while (this.keepRunning.get()) {
         try {
           TimeUnit.MILLISECONDS.sleep(config.GOSSIP_PING);
-          memberManager.sendMembershipList();
+          memberManager.sendClusterInfo();
         } catch (InterruptedException e) {
           // TODO: handle exception
           // This membership thread was interrupted externally, shutdown
@@ -141,26 +141,42 @@ public class Node implements NotificationListener {
     public void run() {
       while (keepRunning.get()) {
         DatagramPacket recv = null;
-        String newNodeIp = "";
+        Member newNode = null;
         try {
           do {
             // get their responses!
             byte[] buf = new byte[config.PACKET_SIZE];
             recv = new DatagramPacket(buf, buf.length);
-            log.addInfo("WAIT: Waiting for multicast message");
+            log.addInfo("RECV: Waiting for multicast message");
 
             multicastServer.receive(recv);
 
-            newNodeIp = Gossip.getAddress(recv);
-            log.addInfo("RECV: Received multicast message - " + newNodeIp);
-
-          } while (((newNodeIp).equals(myAddress)));
+            // Extract member object from byte buffer
+            ByteArrayInputStream bais = new ByteArrayInputStream(recv.getData());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            Object read_obj = ois.readObject();
+            if (read_obj instanceof Member) {
+              newNode = (Member)read_obj;
+              if (newNode.getAddress().equals(myAddress)) {
+                log.addInfo("RECV: Received multicast message (FROM ME) - " + newNode);
+              } else {
+                log.addInfo("RECV: Received multicast message - " + newNode);
+              }
+            }
+            newNode = (Member)read_obj;
+            if (newNode.getAddress().equals(myAddress)) {
+              log.addInfo("RECV: Received multicast message (FROM ME) - " + newNode);
+            } else {
+              log.addInfo("RECV: Received multicast message - " + newNode);
+            }
+          } while (newNode == null || newNode.getAddress().equals(myAddress));
         } catch (IOException e) {
           log.addError("Error receiving datagram packet: " + e.getMessage());
           e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+          log.addError(e.getMessage());
+          e.printStackTrace();
         }
-
-        Member newNode = new Member(newNodeIp, 0, myNode, config.GOSSIP_CLEAN);
 
         markInGroup(); // Change to inGroup state
         memberManager.addNewMember(newNode, false); // Add new member to list
@@ -191,32 +207,37 @@ public class Node implements NotificationListener {
     public void run() {
       while (keepRunning.get()) {
         try {
-          //XXX: be mindful of this array size for later
           byte[] buf = new byte[config.PACKET_SIZE];
           DatagramPacket p = new DatagramPacket(buf, buf.length);
           gossipServer.receive(p);
 
-          // extract the member arraylist out of the packet
+          // Extract the member array list out of the packet
           // TODO: maybe abstract this out to pass just the bytes needed
-          ByteArrayInputStream bais = new ByteArrayInputStream(p.getData());
-          ObjectInputStream ois = new ObjectInputStream(bais);
+//          ByteArrayInputStream bais = new ByteArrayInputStream(p.getData());
+//          ObjectInputStream ois = new ObjectInputStream(bais);
+          ClusterInfo info = ClusterInfo.deserializeClusterInfo(p.getData());
+          log.addInfo("RECV: Receiving member list\nFrom: " +
+                     p.getAddress() + "\n" +
+                     info.toString());
+          markInGroup();
+          memberManager.mergeLists(info);
 
-          Object readObject = ois.readObject();
-          if (readObject instanceof ArrayList<?>) {
-            ArrayList<Member> list = (ArrayList<Member>) readObject;
-
-            StringBuilder str = new StringBuilder();
-            str.append("RECV: Receiving member list\n From: ")
-               .append(p.getAddress()).append("\nList:\n");
-            for (Member m : list) {
-              str.append(m).append("\n");
-            }
-            log.addInfo(str.toString());
-
-            markInGroup();
-            // Merge our list with the one we just received
-            memberManager.mergeLists(list);
-          }
+//          Object readObject = ois.readObject();
+//          if (readObject instanceof ArrayList<?>) {
+//            ArrayList<Member> list = (ArrayList<Member>) readObject;
+//
+//            StringBuilder str = new StringBuilder();
+//            str.append("RECV: Receiving member list\n From: ")
+//               .append(p.getAddress()).append("\nList:\n");
+//            for (Member m : list) {
+//              str.append(m).append("\n");
+//            }
+//            log.addInfo(str.toString());
+//
+//            markInGroup();
+//            // Merge our list with the one we just received
+//            memberManager.mergeLists(list);
+//          }
 
         } catch (IOException e) {
           log.addError("Gossip receiver IO error. Stopping thread...");
@@ -261,11 +282,22 @@ public class Node implements NotificationListener {
   private void send_multicast() {
     // join a Multicast group and send the group salutations
     try {
-      String msg = "Hello";
+      // Serialize member object into bytes
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(memberManager.getMe());
+
+      byte[] buf = baos.toByteArray();
+      if (buf.length > config.PACKET_SIZE) {
+        log.addError("Member object is larger than packet size");
+      }
+
+      // Send member object to multicast address
       InetAddress group = InetAddress.getByName(config.MULTICAST_ADDRESS);
-      DatagramPacket hi = new DatagramPacket(msg.getBytes(), msg.length(), group, config.MULTICAST_PORT);
-      multicastServer.send(hi);
-      Thread.sleep(3000);
+      DatagramPacket member_obj = new DatagramPacket(buf, buf.length, group, config.MULTICAST_PORT);
+      log.addInfo("SEND: Sent multicast message");
+      multicastServer.send(member_obj);
+      Thread.sleep(config.MULTICAST_WAIT);
     } catch (Exception e) {
       e.printStackTrace();
     }

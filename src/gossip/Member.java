@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public class Member implements Serializable {
@@ -14,18 +15,20 @@ public class Member implements Serializable {
    * The member address in the form IP:port
    * Similar to the toString in {@link InetSocketAddress}
    */
-  private String address;
-  private UUID   uuid;
-  private int    heartbeat;
+  private String  address;
+  private int     heartbeat;
+  private long    timestamp;
+  private boolean is_master;
 
   // Set timer as transient so that it is not sent across the network.
   private transient TimeoutTimer timeoutTimer;
 
-  public Member(String address, int heartbeat, Node node, int t_cleanup) {
+  public Member(String address, int heartbeat, Node node, int t_cleanup, long newTimestamp) {
     this.address = address;
-    this.uuid = UUID.randomUUID();
     this.heartbeat = heartbeat;
     this.timeoutTimer = new TimeoutTimer(t_cleanup, node, this);
+    this.timestamp = newTimestamp;
+    this.is_master = false;
 	}
 
 	public void startTimeoutTimer() {
@@ -48,9 +51,28 @@ public class Member implements Serializable {
 		this.heartbeat = heartbeat;
 	}
 
+	public boolean isMaster() {
+		return this.is_master;
+	}
+  
+  public void setAsMaster() {
+    this.is_master = true;
+  }
+	
+	/**
+	 * Get the timestamp at which this member object was created
+	 * @return The creation timestamp
+	 */
+	public long getTimestamp() {
+		return this.timestamp;
+	}
+
 	@Override
 	public String toString() {
-    return "addr: " + address + ", h_beat" + heartbeat;
+    return "addr: " + address +
+           ", h_beat: " + heartbeat +
+           ", time: " + timestamp +
+           (is_master ? " MASTER" : "");
 	}
 
   @SuppressWarnings("unchecked")
@@ -58,7 +80,9 @@ public class Member implements Serializable {
     JSONObject obj = new JSONObject();
     obj.put("address", address);
     obj.put("heartbeat", heartbeat);
+    obj.put("timestamp", timestamp);
     obj.put("is_me", isMe);
+    obj.put("is_master", is_master);
     return obj;
   }
 
@@ -96,9 +120,6 @@ public class Member implements Serializable {
 		} else if (!address.equals(other.address)) {
 			return false;
 		}
-    if (uuid.compareTo(other.uuid) != 0) {
-      return false;
-    }
 		return true;
 	}
 }

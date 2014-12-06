@@ -15,7 +15,8 @@ import java.util.Random;
 
 public class MemberManager {
 
-  private ArrayList<Member> memberList;
+  private ClusterInfo cluster_info;
+//  private ArrayList<Member> memberList;
   private ArrayList<Member> deadList;
   private Member me = null;
   private Node   node;
@@ -27,7 +28,8 @@ public class MemberManager {
     node = n;
     log = l;
     random = new Random();
-    memberList = new ArrayList<Member>();
+//    memberList = new ArrayList<Member>();
+    cluster_info = new ClusterInfo(l);
     deadList = new ArrayList<Member>();
   }
 
@@ -38,15 +40,17 @@ public class MemberManager {
    * not timed out a member and then immediately received a list with that
    * member.
    *
-   * @param remoteList List from remote node
+   * @param info Cluster info from remote node
    */
-  synchronized public void mergeLists(ArrayList<Member> remoteList) {
+  synchronized public void mergeLists(ClusterInfo info) {
+    ArrayList<Member> remoteList = info.getMemberList();
     // Iterate through every member of the remote list
     for (Member remoteMember : remoteList) {
-      if (memberList.contains(remoteMember)) {
+      if (cluster_info.hasMember(remoteMember)) {
         // The remote member matches a local member. Synchronize heartbeats.
         log.addInfo("MERGE: Synchronize remote member - " + remoteMember.getAddress());
         synchronizeHeartbeats(remoteMember);
+        synchronizeMasterStatus(remoteMember);
       } else {
         // the local list does not contain the remote member
 
@@ -68,14 +72,22 @@ public class MemberManager {
         }
       }
     }
+    cluster_info.electMaster(info);
   }
+
+  
+  /**
+   * Get member object for myself
+   * @return Member object for myself
+   */
+  public Member getMe() { return me; }
 
   /**
    * Add new member to list.
    * @param newMember New member object.
    */
   synchronized public void addNewMember(Member newMember, boolean addAsMe) {
-    if (memberList.contains(newMember)) {
+    if (cluster_info.hasMember(newMember)) {
       log.addWarning("Could not add duplicate member - " + newMember);
     } else {
       insertMember(newMember, addAsMe);
@@ -87,9 +99,12 @@ public class MemberManager {
    * @param newMember New member
    */
   synchronized private void insertMember(Member newMember, boolean addAsMe) {
-    Member newLocalMember =
-      new Member(newMember.getAddress(), newMember.getHeartbeat(), node, config.GOSSIP_CLEAN);
-    memberList.add(newLocalMember);
+    Member newLocalMember = new Member(newMember.getAddress(), // IP Address
+                                       newMember.getHeartbeat(), // Heartbeat
+                                       node, // Node object
+                                       config.GOSSIP_CLEAN, // Time to cleanup
+                                       newMember.getTimestamp()); // Created at timestamp
+    cluster_info.addMember(newLocalMember);
     if (!addAsMe) {
       newLocalMember.startTimeoutTimer();
     } else {
@@ -103,12 +118,20 @@ public class MemberManager {
    * @param remoteMember Remove member.
    */
   synchronized public void synchronizeHeartbeats(Member remoteMember) {
-    Member localMember = memberList.get(memberList.indexOf(remoteMember));
+    Member localMember = cluster_info.getMatchingMember(remoteMember);
+//    Member localMember = memberList.get(memberList.indexOf(remoteMember));
     if (remoteMember.getHeartbeat() > localMember.getHeartbeat()) {
       // update local list with latest heartbeat
       localMember.setHeartbeat(remoteMember.getHeartbeat());
       // and reset the timeout of that member
       localMember.resetTimeoutTimer();
+    }
+  }
+
+  synchronized public void synchronizeMasterStatus(Member remote) {
+    if (remote.isMaster()) {
+      Member localMember = cluster_info.getMatchingMember(remote);
+      localMember.setAsMaster();
     }
   }
 
@@ -119,14 +142,18 @@ public class MemberManager {
    */
   synchronized public void reviveMember(Member localDeadMember, Member remoteMember) {
     deadList.remove(localDeadMember);
-    Member newLocalMember =
-      new Member(remoteMember.getAddress(), remoteMember.getHeartbeat(), node, config.GOSSIP_CLEAN);
-    memberList.add(newLocalMember);
+    Member newLocalMember = new Member(remoteMember.getAddress(),
+                                       remoteMember.getHeartbeat(),
+                                       node,
+                                       config.GOSSIP_CLEAN,
+                                      localDeadMember.getTimestamp());
+    cluster_info.addMember(newLocalMember);
     newLocalMember.startTimeoutTimer();
   }
 
   @SuppressWarnings("unchecked")
   synchronized public JSONArray getMembersJSON() {
+    ArrayList<Member> memberList = cluster_info.getMemberList();
     JSONArray json = new JSONArray();
     for (Member m : memberList) {
       json.add(m.toJSON(m == me));
@@ -137,7 +164,7 @@ public class MemberManager {
   /**
    * Send member list to a random member
    */
-  synchronized public void sendMembershipList() {
+  synchronized public void sendClusterInfo() {
     // Increase my own heartbeat
 	if (me == null) {
 		log.addError("SEND: I am null!");
@@ -150,10 +177,11 @@ public class MemberManager {
 
       if (member != null) {
         // Convert member list into byte array
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(this.memberList);
-        byte[] buf = baos.toByteArray();
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        ObjectOutputStream oos = new ObjectOutputStream(baos);
+//        oos.writeObject(this.memberList);
+//        byte[] buf = baos.toByteArray();
+        byte[] buf = ClusterInfo.serializeClusterInfo(cluster_info);
         if (buf.length > config.PACKET_SIZE) {
           log.addError("Member list is larger than packet size");
         }
@@ -164,7 +192,7 @@ public class MemberManager {
         int port = Integer.parseInt(address.split(":")[1]);
 
         InetAddress dest = InetAddress.getByName(host);
-        log.addInfo("SEND: sending member list to - " + dest);
+        log.addInfo("SEND: Sending member list to - " + dest);
 
         //simulate some packet loss ~25%
         int percentToSend = random.nextInt(100);
@@ -193,11 +221,11 @@ public class MemberManager {
   synchronized private Member getRandomMember() {
     Member member = null;
 
-    if (this.memberList.size() > 1) {
+    if (cluster_info.getMemberCount() > 1) {
       int tries = 10;
       do {
-        int randomNeighborIndex = random.nextInt(this.memberList.size() - 1) + 1;
-        member = this.memberList.get(randomNeighborIndex);
+        int randomNeighborIndex = random.nextInt(cluster_info.getMemberCount() - 1) + 1;
+        member = cluster_info.getMember(randomNeighborIndex);
         if (--tries <= 0) {
           member = null;
           break;
@@ -211,7 +239,8 @@ public class MemberManager {
   }
 
   synchronized public void killMember(Member m) {
-    memberList.remove(m);
+    cluster_info.removeMember(m);
+//    memberList.remove(m);
     deadList.add(m);
     log.addInfo("KILL: killed member - " + m);
   }
