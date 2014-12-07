@@ -2,3 +2,5 @@
 # Compiled files
 bin
 out
+
+.DS_Store

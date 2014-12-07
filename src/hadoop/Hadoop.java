@@ -4,6 +4,7 @@ import gossip.Gossip;
 import gossip.Member;
 import gossip.MemberManager;
 import logger.Logger;
+import vm_control.Shell;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -16,7 +17,8 @@ public class Hadoop implements Runnable {
   private MemberManager memberManager;
   private AtomicBoolean run_as_master = new AtomicBoolean(false);
   private HadoopMonitor monitor;
-  public AtomicBoolean is_hadoop_running = new AtomicBoolean(false);
+  private AtomicBoolean is_hadoop_running = new AtomicBoolean(false);
+  private String master_addr;
 
   private class HadoopMonitor {}
 
@@ -41,6 +43,10 @@ public class Hadoop implements Runnable {
     run_as_master.set(true);
   }
 
+  synchronized public void setMasterAddr(String addr) {
+    master_addr = addr;
+  }
+
   public void run() {
     try {
       log.addInfo("HADOOP: Waiting for signal to run Hadoop...");
@@ -51,12 +57,45 @@ public class Hadoop implements Runnable {
 
       if (run_as_master.get()) {
         log.addInfo("HADOOP: Run hadoop as master!");
+        updateXMLWithNewMaster(master_addr);
+        startMasterHadoop();
+
       } else {
         log.addInfo("HADOOP: Run hadoop as slave!");
+        updateXMLWithNewMaster(master_addr);
+        startSlaveHadoop();
+
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+  }
+
+  public void updateXMLWithNewMaster(String new_master) {
+    Shell temp_shell = new Shell();
+
+    String findreplace_cmd = "python3 findreplace.py -m " + new_master;
+
+    temp_shell.executeCommand(findreplace_cmd);
+  }
+
+  public void startMasterHadoop() {
+    Shell temp_shell = new Shell();
+
+    //TODO: replace with master command
+    String start_master_cmd = "python3 findreplace.py -m ";
+
+    temp_shell.executeCommand(start_master_cmd);
+  }
+
+  public void startSlaveHadoop() {
+    Shell temp_shell = new Shell();
+
+    //TODO: replace with slave command
+    String start_slave_cmd = "python3 findreplace.py -m ";
+
+    temp_shell.executeCommand(start_slave_cmd);
+
   }
 
   synchronized public void addMember(Member m) {

@@ -28,9 +28,17 @@ public class MemberManager {
     node = n;
     log = l;
     random = new Random();
-//    memberList = new ArrayList<Member>();
     cluster_info = new ClusterInfo(l);
     deadList = new ArrayList<Member>();
+  }
+
+  synchronized public String getMasterAddr() {
+    for (Member m : cluster_info.getMemberList()) {
+      if (m.isMaster()) {
+        return m.getAddress();
+      }
+    }
+    return null;
   }
 
   /**
@@ -119,7 +127,6 @@ public class MemberManager {
    */
   synchronized public void synchronizeHeartbeats(Member remoteMember) {
     Member localMember = cluster_info.getMatchingMember(remoteMember);
-//    Member localMember = memberList.get(memberList.indexOf(remoteMember));
     if (remoteMember.getHeartbeat() > localMember.getHeartbeat()) {
       // update local list with latest heartbeat
       localMember.setHeartbeat(remoteMember.getHeartbeat());
@@ -177,10 +184,6 @@ public class MemberManager {
 
       if (member != null) {
         // Convert member list into byte array
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        ObjectOutputStream oos = new ObjectOutputStream(baos);
-//        oos.writeObject(this.memberList);
-//        byte[] buf = baos.toByteArray();
         byte[] buf = ClusterInfo.serializeClusterInfo(cluster_info);
         if (buf.length > config.PACKET_SIZE) {
           log.addError("Member list is larger than packet size");
@@ -240,7 +243,6 @@ public class MemberManager {
 
   synchronized public void killMember(Member m) {
     cluster_info.removeMember(m);
-//    memberList.remove(m);
     deadList.add(m);
     log.addInfo("KILL: killed member - " + m);
   }

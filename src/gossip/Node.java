@@ -228,6 +228,7 @@ public class Node implements NotificationListener {
           if (!hadoop.isRunning()) {
             if (memberManager.hasElected()) {
               if (memberManager.getMe().isMaster()) { hadoop.setAsMaster(); }
+              hadoop.setMasterAddr(memberManager.getMasterAddr());
               hadoop.startHadoop();
             }
           }

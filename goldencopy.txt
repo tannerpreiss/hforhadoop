@@ -1,0 +1,1 @@
+This is the golden copy which contains the word @MASTER_HOSTNAME and I would like to change this.
