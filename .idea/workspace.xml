@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/hadoop/Hadoop.java" afterPath="$PROJECT_DIR$/src/hadoop/Hadoop.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/MemberManager.java" afterPath="$PROJECT_DIR$/src/gossip/MemberManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Node.java" afterPath="$PROJECT_DIR$/src/gossip/Node.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="" />
     <ignored path="cs_4284.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/bin/" />
@@ -48,11 +42,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="Node.java" pinned="false" current="false" current-in-tab="true">
+          <file leaf-file-name="Node.java" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.4966292" vertical-offset="3230" max-vertical-offset="5185">
-                  <caret line="230" column="64" selection-start-line="230" selection-start-column="64" selection-end-line="230" selection-end-column="64" />
+                <state vertical-scroll-proportion="0.11460674" vertical-offset="3230" max-vertical-offset="5185">
+                  <caret line="210" column="33" selection-start-line="210" selection-start-column="33" selection-end-line="210" selection-end-column="33" />
                   <folding />
                 </state>
               </provider>
@@ -99,7 +93,7 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name=".gitignore" pinned="false" current="true" current-in-tab="true">
+          <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/.gitignore">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.09413067" vertical-offset="0" max-vertical-offset="903">
@@ -622,12 +616,12 @@
       <workItem from="1417813657320" duration="9346000" />
       <workItem from="1417836231952" duration="6306000" />
       <workItem from="1417897942367" duration="5940000" />
-      <workItem from="1417972356715" duration="1493000" />
+      <workItem from="1417972356715" duration="1671000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="30198000" />
+    <option name="totallyTimeSpent" value="30376000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1112,14 +1106,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4966292" vertical-offset="3230" max-vertical-offset="5185">
-          <caret line="230" column="64" selection-start-line="230" selection-start-column="64" selection-end-line="230" selection-end-column="64" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/gossip/MemberManager.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="4216">
@@ -1147,6 +1133,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.09413067" vertical-offset="0" max-vertical-offset="903">
           <caret line="5" column="9" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.11460674" vertical-offset="3230" max-vertical-offset="5185">
+          <caret line="210" column="33" selection-start-line="210" selection-start-column="33" selection-end-line="210" selection-end-column="33" />
           <folding />
         </state>
       </provider>
