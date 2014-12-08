@@ -2,10 +2,15 @@
 var PORT_NUM;
 var POLL_FREQ;
 var KEEP_POLLING;
+var GOSSIP_RUNNING = false;
 
 $(document).ready(function() {
   $('#start_btn').click(start);
   $('#stop_btn').click(stop);
+  $('.logger_frame').load(function () {
+    $(this).height($(this).contents().height());
+//    $(this).width($(this).contents().width());
+  });
 });
 
 function start() {
@@ -38,6 +43,7 @@ function stop() {
   disable("#stop_btn", true);
   disable("#start_btn", false);
   $('.status_container').removeClass("animate");
+  $('.status_container .state').removeClass("done").addClass("in_progress");
   $('#port_num').prop("disabled", false);
   disable("#port_num", false);
   disable("#poll_freq", false);
@@ -57,7 +63,6 @@ function poll() {
   var url = "http://localhost:" + PORT_NUM + "/status?callback=?";
   $.getJSON(url, function(data) {
     update_state(data);
-    console.log("Update data");
   }).fail(function() {
     console.log("Failed to get status");
   });
@@ -76,6 +81,31 @@ function update_state(data) {
   var in_progress = $('.status_container.animate .in_progress');
   in_progress.removeClass('animate');
   $(in_progress.get(0)).addClass('animate');
+  if (!GOSSIP_RUNNING && data.gossip) {
+    launchIFrame();
+
+  }
+}
+
+function launchIFrame() {
+  var url = "http://localhost:" + PORT_NUM + "/vmaddr?callback=?";
+  $.getJSON(url, function(data) {
+    GOSSIP_RUNNING = true;
+    addr = data.addr;
+    var url = "logger.html?vmaddr=" + addr;
+    var win = window.open(url);
+    if(win) {
+      //Browser has allowed it to be opened
+      win.focus();
+    } else {
+      //Broswer has blocked it
+      alert('Please allow popups for this site');
+    }
+    var link = '<a class="logger_link" href="' + url  + '" target="_blank">Go to VM Logger</a>';
+    $('.container').append(link);
+  }).fail(function() {
+    console.log("Failed to get vm address");
+  });
 }
 
 function set_done(elem, is_done) {

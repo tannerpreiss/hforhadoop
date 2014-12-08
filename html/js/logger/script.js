@@ -12,6 +12,8 @@ var EVENT_CALL = "event";
 var MEMBER_CALL = "member";
 
 $(document).ready(function() {
+  var addr = getUrlParameter("vmaddr");
+  $('#polling_url').val(addr + ":8001");
   $('#members_button').click(call_members);
   $('#events_button').click(call_events);
   $('#toggle_members_polling').click(toggle_ajax_members);
@@ -20,6 +22,20 @@ $(document).ready(function() {
   $('.toggle_events').click(toggle_events_visibility);
   $('#clear_data').click(clear_data);
 });
+
+function getUrlParameter(sParam)
+{
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++)
+  {
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] == sParam)
+    {
+      return sParameterName[1];
+    }
+  }
+}
 
 function clear_data() {
   // Clear member data

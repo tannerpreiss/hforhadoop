@@ -73,11 +73,10 @@ public class Hadoop implements Runnable {
   }
 
   public void updateXMLWithNewMaster(String new_master) {
-    Shell temp_shell = new Shell();
 
-    String findreplace_cmd = "python3 findreplace.py -m " + new_master;
+    String findreplace_cmd = "python3 fix_xml_files.py -m " + new_master;
 
-    temp_shell.executeCommand(findreplace_cmd);
+    Shell.executeCommand(findreplace_cmd);
   }
 
   public void startMasterHadoop() {

@@ -328,3 +328,12 @@ h1 {
 
   100% {
     color: #b3b3b3; } }
+
+.logger_frame {
+  width: 100%; }
+
+.logger_link {
+  font-size: 1.5em;
+  text-align: center;
+  display: block;
+  margin-bottom: 1em; }

@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import gossip.Config;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import vm_control.Shell;
 
@@ -16,7 +15,6 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -43,6 +41,8 @@ public class Server {
     // Create status context
     server.createContext(Handlers.STATUS.getPath(),
                          new MyHandler(Handlers.STATUS));
+    server.createContext(Handlers.VM_ADDR.getPath(),
+                         new MyHandler(Handlers.VM_ADDR));
     server.setExecutor(null); // creates a default executor
     server.start(); // Starts server in a new thread
   }
@@ -50,7 +50,8 @@ public class Server {
   public enum Handlers {
     START("/start"),
     END("/stop"),
-    STATUS("/status");
+    STATUS("/status"),
+    VM_ADDR("/vmaddr");
 
     private final String path;
 
@@ -63,9 +64,9 @@ public class Server {
     }
   }
 
-  private class ShellExecutor implements Runnable {
+  private class TaskExecutor implements Runnable {
     private String cmd;
-    public ShellExecutor(String command) {
+    public TaskExecutor(String command) {
       this.cmd = command;
     }
     public void run() {
@@ -96,10 +97,10 @@ public class Server {
       System.out.println("VM Address: " + vmAddr);
       synchronized (status) { status.put("virtual_machine", true); }
       System.out.println("Start to ping VM");
-      Thread ping = new Thread(new ShellExecutor("ping"));
+      Thread ping = new Thread(new TaskExecutor("ping"));
       ping.start();
       System.out.println("Start listening to VM");
-      Thread listener = new Thread(new ShellExecutor("listen"));
+      Thread listener = new Thread(new TaskExecutor("listen"));
       listener.start();
     }
 
@@ -173,35 +174,6 @@ public class Server {
         e.printStackTrace();
       }
     }
-
-//    public void eventListener() {
-//      try {
-//        AtomicBoolean keepRunning = new AtomicBoolean(true); int count = 0;
-//        DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
-//        while (keepRunning.get()) {
-//          // Start listening for acknowledgement
-//          byte[] buff = new byte[256];
-//          DatagramPacket packet = new DatagramPacket(buff, buff.length);
-//          System.out.println("Listening for events");
-//          socket.receive(packet);
-//
-//          // Received acknowledgement
-//          String data = new String(packet.getData());
-//          if (data.equals("in_group")) {
-//            synchronized (status) { status.put("in_group", true); } count++;
-//          } else if(data.equals("master_selected")) {
-//            synchronized (status) { status.put("master_selected", true); } count++;
-//          } else if(data.equals("hadoop_started")) {
-//            synchronized (status) { status.put("hadoop_started", true); } count++;
-//          }
-//          if (count > 2) { break; }
-//        }
-//      } catch (SocketException e) {
-//        e.printStackTrace();
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//      }
-//    }
   }
 
   class MyHandler implements HttpHandler {
@@ -236,6 +208,8 @@ public class Server {
         stopVM(httpExchange, params);
       } else if (my_handler == Handlers.STATUS) {
         getStatus(httpExchange, params);
+      } else if (my_handler == Handlers.VM_ADDR) {
+        getVMAddr(httpExchange, params);
       } else {
         throw new UnsupportedEncodingException("No handler");
       }
@@ -244,7 +218,7 @@ public class Server {
     @SuppressWarnings("unchecked")
     public void startVM(HttpExchange httpExchange,
                         Map<String, String> params) throws IOException {
-      Thread script = new Thread(new ShellExecutor("start"));
+      Thread script = new Thread(new TaskExecutor("start"));
       script.start();
 
       // Build response
@@ -262,7 +236,7 @@ public class Server {
     @SuppressWarnings("unchecked")
     public void stopVM(HttpExchange httpExchange,
                        Map<String, String> params) throws IOException {
-      Thread script = new Thread(new ShellExecutor("stop"));
+      Thread script = new Thread(new TaskExecutor("stop"));
       script.start();
 
       // Build response
@@ -290,6 +264,21 @@ public class Server {
           obj.put(k, status.get(k));
         }
       }
+
+      str.append(obj.toJSONString());
+      str.append(");");
+      String response = str.toString();
+
+      sendJSONResponse(httpExchange, response.getBytes());
+    }
+
+    public void getVMAddr(HttpExchange httpExchange, Map<String, String> params) throws IOException {
+      // Build response
+      StringBuilder str = new StringBuilder();
+      str.append(params.get("callback")).append("("); // Set callback function
+
+      JSONObject obj = new JSONObject();
+      synchronized (vmAddr) { obj.put("addr", vmAddr); }
 
       str.append(obj.toJSONString());
       str.append(");");
