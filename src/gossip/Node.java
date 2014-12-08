@@ -220,9 +220,12 @@ public class Node implements NotificationListener {
           // Run Hadoop if necessary
           if (!hadoop.isRunning()) {
             if (memberManager.hasElected()) {
-              if (memberManager.getMe().isMaster()) { hadoop.setAsMaster(); }
-              hadoop.setMasterAddr(memberManager.getMasterAddr());
-              hadoop.startHadoop();
+              String master = memberManager.getMasterAddr();
+              if (master != null) {
+                if (memberManager.getMe().isMaster()) { hadoop.setAsMaster(); }
+                hadoop.setMasterAddr(master);
+                hadoop.startHadoop();
+              }
             }
           }
         } catch (IOException e) {

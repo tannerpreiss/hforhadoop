@@ -28,7 +28,7 @@ public class Config {
     config.INTERFACE_NAME    = "en1";
     config.GOSSIP_PORT       = 9999;
     config.PACKET_SIZE       = 1024 * 4;
-    config.NODE_THRESHOLD    = 2;
+    config.NODE_THRESHOLD    = 3;
     config.PING_PORT         = 9090;
     config.EVENT_PORT        = 9095;
     return config;
