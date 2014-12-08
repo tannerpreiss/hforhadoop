@@ -87,7 +87,7 @@ public class Logger {
       DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
       DatagramPacket packet;
       byte[] buff = msg.getBytes();
-      packet = new DatagramPacket(buff, buff.length, this.getHostAddr(), config.PING_PORT);
+      packet = new DatagramPacket(buff, buff.length, this.getHostAddr(), config.EVENT_PORT);
       socket.send(packet);
       socket.close();
     } catch (IOException e) {
