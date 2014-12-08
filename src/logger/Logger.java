@@ -6,6 +6,9 @@ import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,11 +67,32 @@ public class Logger {
     events.add(e);
   }
 
-  synchronized public void markInGroup() { state.put("in_group", true); }
+  synchronized public void markInGroup() {
+    state.put("in_group", true);
+    sendMessage("in_group");
+  }
 
-  synchronized public void markElected() { state.put("master_elected", true); }
+  synchronized public void markElected() {
+    state.put("master_elected", true);
+    sendMessage("master_elected");
+  }
 
-  synchronized public void markHadoop() { state.put("hadoop_started", true); }
+  synchronized public void markHadoop() {
+    state.put("hadoop_started", true);
+    sendMessage("hadoop_started");
+  }
+
+  public void sendMessage(String msg) {
+    try {
+      DatagramSocket socket = new DatagramSocket(config.PING_PORT);
+      DatagramPacket packet;
+      byte[] buff = msg.getBytes();
+      packet = new DatagramPacket(buff, buff.length, this.getHostAddr(), config.PING_PORT);
+      socket.send(packet);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
   synchronized public void addInfo(String str) {
     addEvent(LogType.INFO, str);

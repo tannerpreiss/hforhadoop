@@ -7,11 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/cs_4284_jar.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/dependencies_jar.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/gossip_jar.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/start_vm.py" afterPath="$PROJECT_DIR$/start_vm.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/stop_vm.py" afterPath="$PROJECT_DIR$/stop_vm.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/logger/Logger.java" afterPath="$PROJECT_DIR$/src/logger/Logger.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/hostserver/Server.java" afterPath="$PROJECT_DIR$/src/hostserver/Server.java" />
     </list>
     <ignored path="cs_4284.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -75,17 +72,17 @@
         <entry file="file://$PROJECT_DIR$/src/logger/LogServer.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="2516">
-              <caret line="51" column="40" selection-start-line="51" selection-start-column="40" selection-end-line="51" selection-end-column="40" />
+              <caret line="56" column="28" selection-start-line="54" selection-start-column="8" selection-end-line="56" selection-end-column="28" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="start_vm.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="start_vm.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/start_vm.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.29101285" vertical-offset="0" max-vertical-offset="701">
-              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="357">
+              <caret line="0" column="26" selection-start-line="0" selection-start-column="26" selection-end-line="0" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -104,21 +101,23 @@
       <file leaf-file-name="Logger.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/logger/Logger.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="425" max-vertical-offset="1683">
-              <caret line="51" column="28" selection-start-line="51" selection-start-column="28" selection-end-line="51" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="731" max-vertical-offset="2040">
+              <caret line="90" column="26" selection-start-line="90" selection-start-column="26" selection-end-line="90" selection-end-column="26" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Server.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Server.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/hostserver/Server.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1615" max-vertical-offset="4420">
-              <caret line="126" column="28" selection-start-line="126" selection-start-column="28" selection-end-line="126" selection-end-column="28" />
+            <state vertical-scroll-proportion="0.20114122" vertical-offset="1542" max-vertical-offset="4437">
+              <caret line="137" column="0" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
               <folding>
                 <element signature="e#1960#1961#0" expanded="true" />
                 <element signature="e#1992#1993#0" expanded="true" />
+                <element signature="method#runPing#0;class#ShellExecutor#0;class#Server#0" expanded="false" />
+                <element signature="method#runListen#0;class#ShellExecutor#0;class#Server#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -149,11 +148,11 @@
         <option value="$PROJECT_DIR$/src/gossip/Config.java" />
         <option value="$PROJECT_DIR$/src/logger/LogServer.java" />
         <option value="$PROJECT_DIR$/src/gossip/Gossip.java" />
-        <option value="$PROJECT_DIR$/src/logger/Logger.java" />
         <option value="$PROJECT_DIR$/src/gossip/Node.java" />
-        <option value="$PROJECT_DIR$/src/hostserver/Server.java" />
         <option value="$PROJECT_DIR$/stop_vm.py" />
         <option value="$PROJECT_DIR$/start_vm.py" />
+        <option value="$PROJECT_DIR$/src/hostserver/Server.java" />
+        <option value="$PROJECT_DIR$/src/logger/Logger.java" />
       </list>
     </option>
   </component>
@@ -826,12 +825,12 @@
       <workItem from="1417997825656" duration="2247000" />
       <workItem from="1418006005450" duration="34000" />
       <workItem from="1418006039958" duration="58000" />
-      <workItem from="1418006098644" duration="18529000" />
+      <workItem from="1418006098644" duration="19967000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="59758000" />
+    <option name="totallyTimeSpent" value="61196000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1264,38 +1263,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/logger/Logger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="425" max-vertical-offset="1683">
-          <caret line="51" column="28" selection-start-line="51" selection-start-column="28" selection-end-line="51" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/gossip/Node.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="634" max-vertical-offset="5083">
           <caret line="68" column="33" selection-start-line="68" selection-start-column="33" selection-end-line="68" selection-end-column="33" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/logger/LogServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="2516">
-          <caret line="51" column="40" selection-start-line="51" selection-start-column="40" selection-end-line="51" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/hostserver/Server.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1615" max-vertical-offset="4420">
-          <caret line="126" column="28" selection-start-line="126" selection-start-column="28" selection-end-line="126" selection-end-column="28" />
-          <folding>
-            <element signature="e#1960#1961#0" expanded="true" />
-            <element signature="e#1992#1993#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1325,9 +1297,38 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/start_vm.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29101285" vertical-offset="0" max-vertical-offset="701">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="357">
+          <caret line="0" column="26" selection-start-line="0" selection-start-column="26" selection-end-line="0" selection-end-column="26" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/logger/LogServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="2516">
+          <caret line="56" column="28" selection-start-line="54" selection-start-column="8" selection-end-line="56" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/logger/Logger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="850" max-vertical-offset="2040">
+          <caret line="90" column="26" selection-start-line="90" selection-start-column="26" selection-end-line="90" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/hostserver/Server.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.20114122" vertical-offset="1542" max-vertical-offset="4437">
+          <caret line="137" column="0" selection-start-line="137" selection-start-column="0" selection-end-line="137" selection-end-column="0" />
+          <folding>
+            <element signature="e#1960#1961#0" expanded="true" />
+            <element signature="e#1992#1993#0" expanded="true" />
+            <element signature="method#runPing#0;class#ShellExecutor#0;class#Server#0" expanded="false" />
+            <element signature="method#runListen#0;class#ShellExecutor#0;class#Server#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
