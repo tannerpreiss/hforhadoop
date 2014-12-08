@@ -92,17 +92,19 @@ function launchIFrame() {
   $.getJSON(url, function(data) {
     GOSSIP_RUNNING = true;
     addr = data.addr;
+//    var win = window.open(url);
+//    if(win) {
+//      //Browser has allowed it to be opened
+//      win.focus();
+//    } else {
+//      //Broswer has blocked it
+//      alert('Please allow popups for this site');
+//    }
     var url = "logger.html?vmaddr=" + addr;
-    var win = window.open(url);
-    if(win) {
-      //Browser has allowed it to be opened
-      win.focus();
-    } else {
-      //Broswer has blocked it
-      alert('Please allow popups for this site');
-    }
     var link = '<a class="logger_link" href="' + url  + '" target="_blank">Go to VM Logger</a>';
     $('.container').append(link);
+    url = "http://" + addr + ":50070";
+    link = '<a class="hadoop_link" href="' + url  + '" target="_blank">Go to Hadoop Logger</a>';
   }).fail(function() {
     console.log("Failed to get vm address");
   });

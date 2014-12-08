@@ -79,7 +79,7 @@ public class Hadoop implements Runnable {
     name= "slave" + name;
     log.addInfo("HADOOP: Updating XML to master - " + name);
 
-    String findreplace_cmd = "python3 fix_xml_files.py -m " + new_master;
+    String findreplace_cmd = "python3 fix_xml_files.py -m " + name;
 
     Shell.executeCommand(findreplace_cmd);
   }
