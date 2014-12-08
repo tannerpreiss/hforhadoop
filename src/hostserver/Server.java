@@ -77,8 +77,6 @@ public class Server {
         runPing();
       } else if (cmd.equals("listen")) {
         runListen();
-      } else if (cmd.equals("event")) {
-        eventListener();
       }
     }
 
@@ -149,24 +147,12 @@ public class Server {
         System.out.println("Acknowledgement received!");
         keepPinging.set(false);
         synchronized (status) { status.put("gossip", true); }
-        Thread event_listener = new Thread(new ShellExecutor("event"));
-        event_listener.start();
-        socket.close();
-      } catch (SocketException e) {
-        e.printStackTrace();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
 
-    public void eventListener() {
-      try {
         AtomicBoolean keepRunning = new AtomicBoolean(true); int count = 0;
-        DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
         while (keepRunning.get()) {
           // Start listening for acknowledgement
-          byte[] buff = new byte[256];
-          DatagramPacket packet = new DatagramPacket(buff, buff.length);
+          packet = new DatagramPacket(buff, buff.length);
+          System.out.println("Listening for events");
           socket.receive(packet);
 
           // Received acknowledgement
@@ -186,6 +172,35 @@ public class Server {
         e.printStackTrace();
       }
     }
+
+//    public void eventListener() {
+//      try {
+//        AtomicBoolean keepRunning = new AtomicBoolean(true); int count = 0;
+//        DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
+//        while (keepRunning.get()) {
+//          // Start listening for acknowledgement
+//          byte[] buff = new byte[256];
+//          DatagramPacket packet = new DatagramPacket(buff, buff.length);
+//          System.out.println("Listening for events");
+//          socket.receive(packet);
+//
+//          // Received acknowledgement
+//          String data = new String(packet.getData());
+//          if (data.equals("in_group")) {
+//            synchronized (status) { status.put("in_group", true); } count++;
+//          } else if(data.equals("master_selected")) {
+//            synchronized (status) { status.put("master_selected", true); } count++;
+//          } else if(data.equals("hadoop_started")) {
+//            synchronized (status) { status.put("hadoop_started", true); } count++;
+//          }
+//          if (count > 2) { break; }
+//        }
+//      } catch (SocketException e) {
+//        e.printStackTrace();
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//    }
   }
 
   class MyHandler implements HttpHandler {

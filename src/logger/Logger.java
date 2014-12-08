@@ -82,16 +82,11 @@ public class Logger {
     sendMessage("hadoop_started");
   }
 
-  public void sendMessage(String msg) {
-    try {
-      DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
-      DatagramPacket packet;
-      byte[] buff = msg.getBytes();
-      packet = new DatagramPacket(buff, buff.length, this.getHostAddr(), config.EVENT_PORT);
-      socket.send(packet);
-      socket.close();
-    } catch (IOException e) {
-      e.printStackTrace();
+  synchronized public void sendMessage(String msg) {
+    this.addInfo("LOGGER: Sending event message - " + msg);
+    server.msg = msg;
+    synchronized (this) {
+      this.notify();
     }
   }
 

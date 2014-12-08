@@ -17,6 +17,7 @@ public class LogServer {
 
   private Logger log;
   private Config config = Config.configure();
+  public String msg;
 
   public LogServer(Logger logger, int port) throws Exception {
     log = logger;
@@ -56,10 +57,20 @@ public class LogServer {
         packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), config.PING_PORT);
         socket.send(packet);
         log.addInfo("LOGGER: Send ping back to host");
-//        socket.close();
+        
+        while (true) {
+          synchronized (log) {
+            log.wait();
+          }
+          buff = msg.getBytes();
+          packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), config.PING_PORT);
+          socket.send(packet);
+        }
       } catch (SocketException e) {
         e.printStackTrace();
       } catch (IOException e) {
+        e.printStackTrace();
+      } catch (InterruptedException e) {
         e.printStackTrace();
       }
     }
