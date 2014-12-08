@@ -161,7 +161,7 @@ public class Server {
           if (data.equals("in_group")) {
             synchronized (status) { status.put("in_group", true); } count++;
           } else if(data.equals("master_selected")) {
-            synchronized (status) { status.put("master_selected", true); } count++;
+            synchronized (status) { status.put("master_elected", true); } count++;
           } else if(data.equals("hadoop_started")) {
             synchronized (status) { status.put("hadoop_started", true); } count++;
           }
