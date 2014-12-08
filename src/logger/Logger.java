@@ -1,11 +1,13 @@
 package logger;
 
 import gossip.Config;
+import gossip.Gossip;
 import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Logger {
 
@@ -27,9 +29,16 @@ public class Logger {
   private Node             myNode;
   private ArrayList<Event> events;
   private boolean printToConsole = true;
+  private HashMap<String, Boolean> state;
+  private Config config = Gossip.config;
 
   public Logger(boolean printToConsole, boolean enableServer, int serverPort) {
     this.printToConsole = printToConsole;
+    state = new HashMap<String, Boolean>();
+    state.put("gossip", true);
+    state.put("in_group", false);
+    state.put("master_elected", false);
+    state.put("hadoop_started", false);
 
     if (enableServer) {
       System.out.println("Start log server");
@@ -53,6 +62,12 @@ public class Logger {
     events.add(e);
   }
 
+  synchronized public void markInGroup() { state.put("in_group", true); }
+
+  synchronized public void markElected() { state.put("master_elected", true); }
+
+  synchronized public void markHadoop() { state.put("hadoop_started", true); }
+
   synchronized public void addInfo(String str) {
     addEvent(LogType.INFO, str);
   }
@@ -62,6 +77,8 @@ public class Logger {
   synchronized public void addError(String str) { addEvent(LogType.ERROR, str); }
 
   public void setNodeObj(Node n) { myNode = n; }
+
+  synchronized HashMap<String, Boolean> getStatus() { return state; }
 
   public JSONArray getMembersJSON() {
     return myNode.getMemberManager().getMembersJSON();

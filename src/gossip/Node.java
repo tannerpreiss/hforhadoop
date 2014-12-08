@@ -264,6 +264,7 @@ public class Node implements NotificationListener {
     }
 
     log.addInfo("IN GROUP!");
+    log.markInGroup();
     executor.execute(new MembershipGossiper());
 
     // keep the main thread around

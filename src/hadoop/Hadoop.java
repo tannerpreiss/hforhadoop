@@ -54,6 +54,7 @@ public class Hadoop implements Runnable {
         monitor.wait();
       }
       log.addInfo("HADOOP: Signal received! Executing Hadoop.");
+      log.markHadoop();
 
       if (run_as_master.get()) {
         log.addInfo("HADOOP: Run hadoop as master!");

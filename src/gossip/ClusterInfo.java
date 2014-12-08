@@ -63,6 +63,7 @@ public class ClusterInfo implements Serializable {
     // Check if this cluster CAN elect a master
     if (!master_elected && getMemberCount() >= config.NODE_THRESHOLD) {
       log.addInfo("ELECT: Cluster is ready to elect. Electing...");
+      log.markElected();
       // Get the member with lowest time stamp.
       Member master = null;
       long low_time = Long.MAX_VALUE;
@@ -77,6 +78,7 @@ public class ClusterInfo implements Serializable {
         master.setAsMaster();
         master_elected = true;
         log.addInfo("ELECT: Master node elected - " + master.toString());
+        log.markElected();
       }
     }
   }

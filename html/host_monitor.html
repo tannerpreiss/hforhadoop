@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>H for Hadoop</title>
+
+  <!-- Include custom stylesheets-->
+  <link rel="stylesheet" href="css/libs/normalize.css"/>
+  <link rel="stylesheet" href="css/host_monitor/styles.css"/>
+
+  <script src="js/libs/jquery-2.1.1.min.js"></script>
+  <script src="js/host_monitor/script.js"></script>
+</head>
+<body>
+<article class="container">
+  <h1>Ephemeral Hadoop</h1>
+  <div class="input_container">
+    <div class="input_field">
+      <label for="port_num">Localhost port number:</label>
+      <input id="port_num" type="text" value="8080"/>
+    </div>
+    <div class="input_field">
+      <label for="poll_freq">Poll frequency:</label>
+      <input id="poll_freq" type="text" value="5000"/>
+    </div>
+  </div>
+  <div class="button_container">
+    <button id="start_btn">Start</button>
+    <button id="stop_btn" disabled>Stop</button>
+  </div>
+  <div class="status_container">
+    <div class="state vm in_progress">Start Virtual Machine<span>&#10003;</span></div>
+    <div class="state g in_progress">Start Gossip Protocol<span>&#10003;</span></div>
+    <div class="state ig in_progress">Join Gossip Network<span>&#10003;</span></div>
+    <div class="state ms in_progress">Elect Master<span>&#10003;</span></div>
+    <div class="state h in_progress">Launch Hadoop<span>&#10003;</span></div>
+  </div>
+</article>
+</body>
+</html>
