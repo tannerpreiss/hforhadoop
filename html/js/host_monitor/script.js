@@ -105,6 +105,7 @@ function launchIFrame() {
     $('.container').append(link);
     url = "http://" + addr + ":50070";
     link = '<a class="hadoop_link" href="' + url  + '" target="_blank">Go to Hadoop Logger</a>';
+    $('.container').append(link);
   }).fail(function() {
     console.log("Failed to get vm address");
   });
