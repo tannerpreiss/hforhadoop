@@ -41,21 +41,26 @@ function stop() {
   $('#port_num').prop("disabled", false);
   disable("#port_num", false);
   disable("#poll_freq", false);
+  poll();
 }
 
 function poll_status() {
   if (KEEP_POLLING) {
-    var url = "http://localhost:" + PORT_NUM + "/status?callback=?";
-    $.getJSON(url, function(data) {
-      update_state(data);
-      console.log("Update data");
-    }).fail(function() {
-      console.log("Failed to get status");
-    });
+    poll();
     setTimeout(poll_status, POLL_FREQ);
   } else {
 
   }
+}
+
+function poll() {
+  var url = "http://localhost:" + PORT_NUM + "/status?callback=?";
+  $.getJSON(url, function(data) {
+    update_state(data);
+    console.log("Update data");
+  }).fail(function() {
+    console.log("Failed to get status");
+  });
 }
 
 function disable(elem, enable) {
