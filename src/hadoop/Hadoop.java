@@ -56,7 +56,7 @@ public class Hadoop implements Runnable {
       log.addInfo("HADOOP: Signal received! Executing Hadoop.");
       log.markHadoop();
 
-      updateXMLWithNewMaster(master_addr);
+      if (!updateXMLWithNewMaster(master_addr)) {return;}
 
       if (run_as_master.get()) {
         log.addInfo("HADOOP: Run hadoop as master!");
@@ -70,7 +70,11 @@ public class Hadoop implements Runnable {
     }
   }
 
-  public void updateXMLWithNewMaster(String new_master) {
+  public boolean updateXMLWithNewMaster(String new_master) {
+    if (new_master == null) {
+      log.addError("HADOOP: Master node 101");
+      return false;
+    }
     String[] words = new_master.split("\\.");
     int index = words[words.length - 1].indexOf(":");
     String word = words[words.length - 1].substring(0, index);
@@ -82,6 +86,7 @@ public class Hadoop implements Runnable {
     String findreplace_cmd = "python3 fix_xml_files.py -m " + name;
 
     Shell.executeCommand(findreplace_cmd);
+    return true;
   }
 
   public void startMasterHadoop() {
