@@ -158,11 +158,11 @@ public class Server {
           // Received acknowledgement
           String data = new String(packet.getData()).trim();
           System.out.println("Received data: " + data);
-          if (data.equals("in_group")) {
+          if (data.indexOf("in_group") != -1) {
             synchronized (status) { status.put("in_group", true); } count++;
-          } else if(data.equals("master_selected")) {
+          } else if(data.indexOf("master_elected") != -1) {
             synchronized (status) { status.put("master_elected", true); } count++;
-          } else if(data.equals("hadoop_started")) {
+          } else if(data.indexOf("hadoop_started") != -1) {
             synchronized (status) { status.put("hadoop_started", true); } count++;
           }
           if (count > 2) { break; }
