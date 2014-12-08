@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+	<property>
+		<name>yarn.nodemanager.aux-services</name>
+		<value>mapreduce_shuffle</value>
+	</property> 
+	 <property>
+		<name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+		<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+	</property>
+	<property>
+		<name>yarn.resourcemanager.hostname</name>
+		<value>@MASTER_HOSTNAME</value>
+	</property> 
+</configuration>

@@ -6,6 +6,7 @@ import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,6 +32,8 @@ public class Logger {
   private boolean printToConsole = true;
   private HashMap<String, Boolean> state;
   private Config config = Gossip.config;
+  private InetAddress hostAddr = null;
+  private LogServer server = null;
 
   public Logger(boolean printToConsole, boolean enableServer, int serverPort) {
     this.printToConsole = printToConsole;
@@ -41,9 +44,9 @@ public class Logger {
     state.put("hadoop_started", false);
 
     if (enableServer) {
-      System.out.println("Start log server");
+      this.addInfo("LOGGER: Start log server");
       try {
-        LogServer server = new LogServer(this, serverPort);
+        server = new LogServer(this, serverPort);
       } catch (Exception e) {
         e.printStackTrace();
         System.exit(1);
@@ -75,6 +78,10 @@ public class Logger {
   synchronized public void addWarning(String str) { addEvent(LogType.WARNING, str); }
 
   synchronized public void addError(String str) { addEvent(LogType.ERROR, str); }
+
+  synchronized public void setHostAddr(InetAddress addr) { hostAddr = addr; }
+
+  synchronized public InetAddress getHostAddr() { return hostAddr; }
 
   public void setNodeObj(Node n) { myNode = n; }
 

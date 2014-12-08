@@ -4,34 +4,64 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import gossip.Node;
+import gossip.Config;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.*;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LogServer {
 
-  private Logger my_log;
+  private Logger log;
+  private Config config = Config.configure();
 
   public LogServer(Logger logger, int port) throws Exception {
-    my_log = logger;
+    log = logger;
 
     // Configure and start the server
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     // Create members context
     server.createContext(Handlers.MEMBERS.getPath(),
-        new MyHandler(Handlers.MEMBERS));
+                         new MyHandler(Handlers.MEMBERS));
     // Create event context
     server.createContext(Handlers.EVENTS.getPath(),
-        new MyHandler(Handlers.EVENTS));
+                         new MyHandler(Handlers.EVENTS));
     server.setExecutor(null); // creates a default executor
     server.start(); // Starts server in a new thread
+
+    // Start thread for communicating to host machine
+    new Thread(new PingListener()).start();
+  }
+
+  public class PingListener implements Runnable {
+    public PingListener() {
+
+    }
+
+    public void run() {
+      try {
+        // Receive ping from host
+        DatagramSocket socket = new DatagramSocket(config.PING_PORT);
+        byte[] buff = new byte[256];
+        DatagramPacket packet = new DatagramPacket(buff, buff.length);
+        socket.receive(packet);
+        log.setHostAddr(packet.getAddress());
+        log.addInfo("LOGGER: Received host ping - " + log.getHostAddr().toString());
+
+        // Send ping back to host
+        buff = "i'm here".getBytes();
+        packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), config.PING_PORT);
+        socket.send(packet);
+        log.addInfo("LOGGER: Send ping back to host");
+      } catch (SocketException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   public enum Handlers {
@@ -84,7 +114,7 @@ public class LogServer {
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
 
-      JSONArray arr = my_log.getMembersJSON();
+      JSONArray arr = log.getMembersJSON();
       JSONObject obj = new JSONObject();
       obj.put("member_list", arr);
 
@@ -106,7 +136,7 @@ public class LogServer {
       // Build response
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
-      JSONArray arr = my_log.getEventsJSON();
+      JSONArray arr = log.getEventsJSON();
 
       JSONObject obj = new JSONObject();
       obj.put("event_list", arr);

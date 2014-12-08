@@ -10,7 +10,7 @@ public class Shell {
 
   public static String executeCommand(String command) {
 
-    StringBuffer output = new StringBuffer();
+    StringBuilder output = new StringBuilder();
 
     Process p;
     try {
@@ -28,5 +28,10 @@ public class Shell {
     }
 
     return output.toString();
+  }
+
+  public static void main(String args[]) {
+    String result = Shell.executeCommand("python get_ip.py");
+    System.out.println(result.trim());
   }
 }

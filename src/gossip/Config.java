@@ -14,4 +14,21 @@ public class Config {
   public int    GOSSIP_PORT; // Port for gossip requests
   public int    PACKET_SIZE; // Size of buffer for receiving packets
   public int    NODE_THRESHOLD; // Number of nodes before election
+  public int    PING_PORT; // Port for host machine to ping VM
+
+  public static Config configure() {
+    Config config = new Config();
+    config.PORT_NUM          = 222;
+    config.GOSSIP_PING       = 5000;
+    config.GOSSIP_CLEAN      = 40000;
+    config.MULTICAST_PORT    = 6789;
+    config.MULTICAST_ADDRESS = "228.5.6.7";
+    config.MULTICAST_WAIT    = 5000;
+    config.INTERFACE_NAME    = "en1";
+    config.GOSSIP_PORT       = 9999;
+    config.PACKET_SIZE       = 1024 * 4;
+    config.NODE_THRESHOLD    = 2;
+    config.PING_PORT         = 9090;
+    return config;
+  }
 }
