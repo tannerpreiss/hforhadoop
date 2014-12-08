@@ -156,7 +156,8 @@ public class Server {
           socket.receive(packet);
 
           // Received acknowledgement
-          String data = new String(packet.getData());
+          String data = new String(packet.getData()).trim();
+          System.out.println("Received data: " + data);
           if (data.equals("in_group")) {
             synchronized (status) { status.put("in_group", true); } count++;
           } else if(data.equals("master_selected")) {

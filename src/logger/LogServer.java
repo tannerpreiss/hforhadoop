@@ -57,7 +57,7 @@ public class LogServer {
         packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), config.PING_PORT);
         socket.send(packet);
         log.addInfo("LOGGER: Send ping back to host");
-        
+
         while (true) {
           synchronized (log) {
             log.wait();
