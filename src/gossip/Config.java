@@ -15,6 +15,7 @@ public class Config {
   public int    PACKET_SIZE; // Size of buffer for receiving packets
   public int    NODE_THRESHOLD; // Number of nodes before election
   public int    PING_PORT; // Port for host machine to ping VM
+  public int    EVENT_PORT; // Port for host machine to ping VM
 
   public static Config configure() {
     Config config = new Config();
@@ -29,6 +30,7 @@ public class Config {
     config.PACKET_SIZE       = 1024 * 4;
     config.NODE_THRESHOLD    = 2;
     config.PING_PORT         = 9090;
+    config.EVENT_PORT        = 9095;
     return config;
   }
 }

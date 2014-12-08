@@ -162,9 +162,9 @@ public class Server {
     public void eventListener() {
       try {
         AtomicBoolean keepRunning = new AtomicBoolean(true); int count = 0;
+        DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
         while (keepRunning.get()) {
           // Start listening for acknowledgement
-          DatagramSocket socket = new DatagramSocket(config.PING_PORT);
           byte[] buff = new byte[256];
           DatagramPacket packet = new DatagramPacket(buff, buff.length);
           socket.receive(packet);

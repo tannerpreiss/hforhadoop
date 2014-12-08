@@ -84,7 +84,7 @@ public class Logger {
 
   public void sendMessage(String msg) {
     try {
-      DatagramSocket socket = new DatagramSocket(config.PING_PORT);
+      DatagramSocket socket = new DatagramSocket(config.EVENT_PORT);
       DatagramPacket packet;
       byte[] buff = msg.getBytes();
       packet = new DatagramPacket(buff, buff.length, this.getHostAddr(), config.PING_PORT);
