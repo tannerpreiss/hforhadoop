@@ -56,16 +56,14 @@ public class Hadoop implements Runnable {
       log.addInfo("HADOOP: Signal received! Executing Hadoop.");
       log.markHadoop();
 
+      updateXMLWithNewMaster(master_addr);
+
       if (run_as_master.get()) {
         log.addInfo("HADOOP: Run hadoop as master!");
-        updateXMLWithNewMaster(master_addr);
         startMasterHadoop();
-
       } else {
         log.addInfo("HADOOP: Run hadoop as slave!");
-        updateXMLWithNewMaster(master_addr);
         startSlaveHadoop();
-
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -73,6 +71,13 @@ public class Hadoop implements Runnable {
   }
 
   public void updateXMLWithNewMaster(String new_master) {
+    String[] words = new_master.split("\\.");
+    int index = words[words.length - 1].indexOf(":");
+    String word = words[words.length - 1].substring(0, index);
+    int num = Integer.parseInt(word);
+    String name = String.format("%03d", num);
+    name= "slave" + name;
+    log.addInfo("HADOOP: Updating XML to master - " + name);
 
     String findreplace_cmd = "python3 fix_xml_files.py -m " + new_master;
 
@@ -80,21 +85,21 @@ public class Hadoop implements Runnable {
   }
 
   public void startMasterHadoop() {
-    Shell temp_shell = new Shell();
+//    Shell temp_shell = new Shell();
+//
+//    //TODO: replace with master command
+//    String start_master_cmd = "start-master.sh";
 
-    //TODO: replace with master command
-    String start_master_cmd = "python3 findreplace.py -m ";
-
-    temp_shell.executeCommand(start_master_cmd);
+    Shell.executeCommand("start-master.sh");
   }
 
   public void startSlaveHadoop() {
-    Shell temp_shell = new Shell();
+//    Shell temp_shell = new Shell();
+//
+//    //TODO: replace with slave command
+//    String start_slave_cmd = "start-slave.sh";
 
-    //TODO: replace with slave command
-    String start_slave_cmd = "python3 findreplace.py -m ";
-
-    temp_shell.executeCommand(start_slave_cmd);
+    Shell.executeCommand("start-slave.sh");
 
   }
 

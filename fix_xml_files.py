@@ -14,9 +14,6 @@ golden_paths = ["/home/frosty/golden-core-site.xml",
 dest_paths = ["/usr/local/hadoop/etc/hadoop/core-site.xml",
 			  "/usr/local/hadoop/etc/hadoop/yarn-site.xml"]
 
-#dest_paths = ["~/usr/local/hadoop/etc/hadoop/core-site.xml",
-#			 "~/usr/local/hadoop/etc/hadoop/yarn-site.xml"]
-
 #Copy the golden copy files into the final destination for Hadoop.
 for i in range(0, len(dest_paths)):
 	shutil.copy2(golden_paths[i], dest_paths[i])
@@ -24,4 +21,3 @@ for i in range(0, len(dest_paths)):
 #Find and replace all 
 for line in fileinput.input(dest_paths, inplace=True):
 	print(line.replace(prev_master_name, new_master_name), end='')
-
