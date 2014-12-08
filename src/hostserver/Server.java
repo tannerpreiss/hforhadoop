@@ -86,7 +86,6 @@ public class Server {
       synchronized (vmAddr) {
         while (vmAddr.equals("")) {
           vmAddr = Shell.executeCommand("python get_ip.py").trim();
-          System.out.println(vmAddr.trim());
           try {
             Thread.sleep(2000);
           } catch (InterruptedException e) {
@@ -112,7 +111,7 @@ public class Server {
 
     public void runPing() {
       try {
-        DatagramSocket socket = new DatagramSocket(config.PING_PORT);
+        DatagramSocket socket = new DatagramSocket(config.PING_PORT + 1);
         while (keepPinging.get()) {
           byte[] buff = "are you there?".getBytes();
           DatagramPacket packet =
@@ -131,14 +130,17 @@ public class Server {
 
     public void runListen() {
       try {
+        // Start listening for acknowledgement
         DatagramSocket socket = new DatagramSocket(config.PING_PORT);
         byte[] buff = new byte[256];
         DatagramPacket packet = new DatagramPacket(buff, buff.length);
+        System.out.println("Listening for acknowledgement");
         socket.receive(packet);
-        if (new String(buff).equals("i'm here")) {
-          keepPinging.set(false);
-          synchronized (status) { status.put("gossip", true); }
-        }
+
+        // Received acknowledgement
+        System.out.println("Acknowledgement received!");
+        keepPinging.set(false);
+        synchronized (status) { status.put("gossip", true); }
       } catch (SocketException e) {
         e.printStackTrace();
       } catch (IOException e) {
@@ -228,9 +230,12 @@ public class Server {
       str.append(params.get("callback")).append("("); // Set callback function
 
       JSONObject obj = new JSONObject();
-      for (String k : status.keySet()) {
-        obj.put(k, status.get(k));
+      synchronized (status) {
+        for (String k : status.keySet()) {
+          obj.put(k, status.get(k));
+        }
       }
+
       str.append(obj.toJSONString());
       str.append(");");
       String response = str.toString();
