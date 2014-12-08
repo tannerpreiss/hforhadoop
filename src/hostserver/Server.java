@@ -151,6 +151,7 @@ public class Server {
         synchronized (status) { status.put("gossip", true); }
         Thread event_listener = new Thread(new ShellExecutor("event"));
         event_listener.start();
+        socket.close();
       } catch (SocketException e) {
         e.printStackTrace();
       } catch (IOException e) {

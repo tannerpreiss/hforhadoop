@@ -89,6 +89,7 @@ public class Logger {
       byte[] buff = msg.getBytes();
       packet = new DatagramPacket(buff, buff.length, this.getHostAddr(), config.PING_PORT);
       socket.send(packet);
+      socket.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
