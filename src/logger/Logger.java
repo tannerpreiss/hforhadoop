@@ -37,6 +37,7 @@ public class Logger {
 
   public Logger(boolean printToConsole, boolean enableServer, int serverPort) {
     this.printToConsole = printToConsole;
+    events = new ArrayList<Event>();
     state = new HashMap<String, Boolean>();
     state.put("gossip", true);
     state.put("in_group", false);
@@ -52,8 +53,6 @@ public class Logger {
         System.exit(1);
       }
     }
-
-    events = new ArrayList<Event>();
   }
 
   synchronized public void addEvent(LogType type, String str) {

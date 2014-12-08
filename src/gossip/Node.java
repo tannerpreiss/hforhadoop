@@ -105,7 +105,6 @@ public class Node implements NotificationListener {
       this.keepRunning = new AtomicBoolean(true);
     }
 
-    @Override
     public void run() {
       while (this.keepRunning.get()) {
         try {
@@ -159,18 +158,12 @@ public class Node implements NotificationListener {
             ObjectInputStream ois = new ObjectInputStream(bais);
             Object read_obj = ois.readObject();
             if (read_obj instanceof Member) {
-              newNode = (Member)read_obj;
+              newNode = (Member) read_obj;
               if (newNode.getAddress().equals(myAddress)) {
                 log.addInfo("RECV: Received multicast message (FROM ME) - " + newNode);
               } else {
                 log.addInfo("RECV: Received multicast message - " + newNode);
               }
-            }
-            newNode = (Member)read_obj;
-            if (newNode.getAddress().equals(myAddress)) {
-              log.addInfo("RECV: Received multicast message (FROM ME) - " + newNode);
-            } else {
-              log.addInfo("RECV: Received multicast message - " + newNode);
             }
           } while (newNode == null || newNode.getAddress().equals(myAddress));
         } catch (IOException e) {
