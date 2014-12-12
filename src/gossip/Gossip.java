@@ -5,6 +5,8 @@ import logger.Logger;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Gossip {
@@ -12,8 +14,7 @@ public class Gossip {
   public static Config config = Config.configure();
 
   public static void main(String args[]) throws InterruptedException, SocketException, UnknownHostException {
-    System.out.println("Size: " + args.length);
-    System.out.println(args[0] + " " + args[1] + " " + args[2]);
+    System.out.println(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
     Logger log = getLogger(args);
     Node node = new Node(log);
     node.start_listeners(node);

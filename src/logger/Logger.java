@@ -6,37 +6,20 @@ import gossip.Node;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Logger {
 
-  class Event {
-    private LogType type;
-    private String  msg;
-
-    public Event(LogType logType, String message) {
-      type = logType;
-      msg = message;
-    }
-
-    @Override
-    public String toString() {
-      return type + "\t" + msg;
-    }
-  }
-
   private Node             myNode;
   private ArrayList<Event> events;
   private boolean printToConsole = true;
   private HashMap<String, Boolean> state;
-  private Config config = Gossip.config;
+  private Config      config   = Gossip.config;
   private InetAddress hostAddr = null;
-  private LogServer server = null;
+  private int         hostPort = 0;
+  private LogServer   server   = null;
 
   public Logger(boolean printToConsole, boolean enableServer, int serverPort) {
     this.printToConsole = printToConsole;
@@ -61,10 +44,11 @@ public class Logger {
   synchronized public void addEvent(LogType type, String str) {
     str = str.replaceAll("(\r\n|\n)", "<br />");
     Event e = new Event(type, str);
+    events.add(e);
     if (printToConsole) {
+      if (!config.PRINT_DEBUG && type == LogType.DEBUG) { return; }
       System.out.println(e);
     }
-    events.add(e);
   }
 
   synchronized public void markInGroup() {
@@ -90,9 +74,9 @@ public class Logger {
     }
   }
 
-  synchronized public void addInfo(String str) {
-    addEvent(LogType.INFO, str);
-  }
+  synchronized public void addDebug(String str) { addEvent(LogType.DEBUG, str); }
+
+  synchronized public void addInfo(String str) { addEvent(LogType.INFO, str); }
 
   synchronized public void addWarning(String str) { addEvent(LogType.WARNING, str); }
 
@@ -100,11 +84,13 @@ public class Logger {
 
   synchronized public void setHostAddr(InetAddress addr) { hostAddr = addr; }
 
+  synchronized public void setHostPort(int port) { hostPort = port; }
+
   synchronized public InetAddress getHostAddr() { return hostAddr; }
 
-  public void setNodeObj(Node n) { myNode = n; }
+  synchronized public int getHostPort() { return hostPort; }
 
-  synchronized HashMap<String, Boolean> getStatus() { return state; }
+  public void setNodeObj(Node n) { myNode = n; }
 
   public JSONArray getMembersJSON() {
     return myNode.getMemberManager().getMembersJSON();
@@ -121,5 +107,27 @@ public class Logger {
     }
     events.clear();
     return json;
+  }
+
+  public enum LogType {
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR;
+  }
+
+  class Event {
+    private LogType type;
+    private String  msg;
+
+    public Event(LogType logType, String message) {
+      type = logType;
+      msg = message;
+    }
+
+    @Override
+    public String toString() {
+      return type + "\t" + msg;
+    }
   }
 }

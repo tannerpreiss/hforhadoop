@@ -15,7 +15,7 @@ public class Config {
   public int    PACKET_SIZE; // Size of buffer for receiving packets
   public int    NODE_THRESHOLD; // Number of nodes before election
   public int    PING_PORT; // Port for host machine to ping VM
-  public int    EVENT_PORT; // Port for host machine to ping VM
+  public boolean PRINT_DEBUG;
 
   public static Config configure() {
     Config config = new Config();
@@ -25,12 +25,12 @@ public class Config {
     config.MULTICAST_PORT    = 6789;
     config.MULTICAST_ADDRESS = "228.5.6.7";
     config.MULTICAST_WAIT    = 5000;
-    config.INTERFACE_NAME    = "en1";
+    config.INTERFACE_NAME    = "eth1";
     config.GOSSIP_PORT       = 9999;
     config.PACKET_SIZE       = 1024 * 4;
     config.NODE_THRESHOLD    = 3;
     config.PING_PORT         = 9090;
-    config.EVENT_PORT        = 9095;
+    config.PRINT_DEBUG = true;
     return config;
   }
 }

@@ -1,2 +1,2 @@
 #!/bin/sh
-java -jar server.jar
+java -jar host_server.jar

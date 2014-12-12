@@ -45,16 +45,21 @@ public class LogServer {
     public void run() {
       try {
         // Receive ping from host
-        DatagramSocket socket = new DatagramSocket(config.PING_PORT);
+        InetAddress addr = NetworkInterface.getByName(config.INTERFACE_NAME).getInetAddresses().nextElement();
+        log.addInfo("LOGGER: Waiting for host ping on addr: " + addr.getHostAddress() + ":" + config.PING_PORT);
+        DatagramSocket socket = new DatagramSocket(config.PING_PORT, addr);
         byte[] buff = new byte[256];
         DatagramPacket packet = new DatagramPacket(buff, buff.length);
         socket.receive(packet);
+        String port_str = new String(packet.getData(), 0, packet.getLength());
+        int port_num = Integer.parseInt(port_str);
         log.setHostAddr(packet.getAddress());
-        log.addInfo("LOGGER: Received host ping - " + log.getHostAddr().toString());
+        log.setHostPort(port_num);
+        log.addInfo("LOGGER: Received host ping - " + log.getHostAddr().toString() + ":" + log.getHostPort());
 
         // Send ping back to host
-        buff = "i'm here".getBytes();
-        packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), config.PING_PORT);
+        buff = "I'm here".getBytes();
+        packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), log.getHostPort());
         socket.send(packet);
         log.addInfo("LOGGER: Send ping back to host");
 
@@ -63,7 +68,7 @@ public class LogServer {
             log.wait();
           }
           buff = msg.getBytes();
-          packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), config.PING_PORT);
+          packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), log.getHostPort());
           socket.send(packet);
         }
       } catch (SocketException e) {

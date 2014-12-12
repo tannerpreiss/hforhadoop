@@ -15,6 +15,7 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -27,6 +28,10 @@ public class Server {
   private static int           counter     = 0;
   private static String        vmAddr      = "";
   private static AtomicBoolean keepPinging = new AtomicBoolean(true);
+  private static String vmName;
+  private static int        vmNumber      = 0;
+  private static int localhost_port;
+  private static int receive_port;
 
   public Server(int port) throws Exception {
 
@@ -66,9 +71,11 @@ public class Server {
 
   private class TaskExecutor implements Runnable {
     private String cmd;
+
     public TaskExecutor(String command) {
       this.cmd = command;
     }
+
     public void run() {
       if (cmd.equals("start")) {
         runStart();
@@ -82,20 +89,26 @@ public class Server {
     }
 
     public void runStart() {
-      Shell.executeCommand("python start_vm.py");
-      System.out.println("VM is started");
+//      Shell.executeCommand("python start_vm.py");
+      String result = Shell.executeCommand("./vagrant_start.sh " + vmName).trim();
       synchronized (vmAddr) {
-        while (vmAddr.equals("")) {
-          vmAddr = Shell.executeCommand("python get_ip.py").trim();
-          try {
-            Thread.sleep(2000);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
+        vmAddr = result;
       }
-      System.out.println("VM Address: " + vmAddr);
-      synchronized (status) { status.put("virtual_machine", true); }
+//      System.out.println("VM is started");
+//      synchronized (vmAddr) {
+//        while (vmAddr.equals("")) {
+//          vmAddr = Shell.executeCommand("python get_ip.py").trim();
+//          try {
+//            Thread.sleep(2000);
+//          } catch (InterruptedException e) {
+//            e.printStackTrace();
+//          }
+//        }
+//      }
+      System.out.println("VM started - [" + vmName + "] IP Address: " + vmAddr);
+      synchronized (status) {
+        status.put("virtual_machine", true);
+      }
       System.out.println("Start to ping VM");
       Thread ping = new Thread(new TaskExecutor("ping"));
       ping.start();
@@ -105,8 +118,10 @@ public class Server {
     }
 
     public void runStop() {
-      Shell.executeCommand("python stop_vm.py");
-      System.out.println("VM is shutdown");
+//      Shell.executeCommand("python stop_vm.py");
+      String result = Shell.executeCommand("./vagrant_stop.sh " + vmName);
+      System.out.println("VM stopped [" + vmName + "]");
+//      System.out.println("VM is shutdown");
       synchronized (status) {
         status.put("virtual_machine", false);
         status.put("gossip", false);
@@ -114,17 +129,20 @@ public class Server {
         status.put("master_elected", false);
         status.put("hadoop_started", false);
       }
+      System.exit(0);
     }
 
     public void runPing() {
       try {
-        DatagramSocket socket = new DatagramSocket(config.PING_PORT + 1);
+        DatagramSocket socket = new DatagramSocket(0);
+        System.out.println("Ping VM: " + vmAddr + ":" + config.PING_PORT);
         while (keepPinging.get()) {
-          byte[] buff = "are you there?".getBytes();
+          byte[] buff = Integer.toString(receive_port).getBytes();
           DatagramPacket packet =
             new DatagramPacket(buff, buff.length,
                                InetAddress.getByName(vmAddr), config.PING_PORT);
           socket.send(packet);
+          Thread.sleep(2000);
         }
       } catch (UnknownHostException e) {
         e.printStackTrace();
@@ -132,24 +150,29 @@ public class Server {
         e.printStackTrace();
       } catch (IOException e) {
         e.printStackTrace();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
     }
 
     public void runListen() {
       try {
         // Start listening for acknowledgement
-        DatagramSocket socket = new DatagramSocket(config.PING_PORT);
+        DatagramSocket socket = new DatagramSocket(receive_port);
         byte[] buff = new byte[256];
         DatagramPacket packet = new DatagramPacket(buff, buff.length);
-        System.out.println("Listening for acknowledgement");
+        System.out.println("Listening for acknowledgement - port: " + receive_port);
         socket.receive(packet);
 
         // Received acknowledgement
         System.out.println("Acknowledgement received!");
         keepPinging.set(false);
-        synchronized (status) { status.put("gossip", true); }
+        synchronized (status) {
+          status.put("gossip", true);
+        }
 
-        AtomicBoolean keepRunning = new AtomicBoolean(true); int count = 0;
+        AtomicBoolean keepRunning = new AtomicBoolean(true);
+        int count = 0;
         while (keepRunning.get()) {
           // Start listening for acknowledgement
           packet = new DatagramPacket(buff, buff.length);
@@ -157,16 +180,27 @@ public class Server {
           socket.receive(packet);
 
           // Received acknowledgement
-          String data = new String(packet.getData()).trim();
+          String data = new String(packet.getData(), 0, packet.getLength()).trim();
           System.out.println("Received data: " + data);
           if (data.indexOf("in_group") != -1) {
-            synchronized (status) { status.put("in_group", true); } count++;
-          } else if(data.indexOf("master_elected") != -1) {
-            synchronized (status) { status.put("master_elected", true); } count++;
-          } else if(data.indexOf("hadoop_started") != -1) {
-            synchronized (status) { status.put("hadoop_started", true); } count++;
+            synchronized (status) {
+              status.put("in_group", true);
+            }
+            count++;
+          } else if (data.indexOf("master_elected") != -1) {
+            synchronized (status) {
+              status.put("master_elected", true);
+            }
+            count++;
+          } else if (data.indexOf("hadoop_started") != -1) {
+            synchronized (status) {
+              status.put("hadoop_started", true);
+            }
+            count++;
           }
-          if (count > 2) { break; }
+          if (count > 2) {
+            break;
+          }
         }
       } catch (SocketException e) {
         e.printStackTrace();
@@ -218,6 +252,7 @@ public class Server {
     @SuppressWarnings("unchecked")
     public void startVM(HttpExchange httpExchange,
                         Map<String, String> params) throws IOException {
+      System.out.println("[Start VM]");
       Thread script = new Thread(new TaskExecutor("start"));
       script.start();
 
@@ -236,6 +271,7 @@ public class Server {
     @SuppressWarnings("unchecked")
     public void stopVM(HttpExchange httpExchange,
                        Map<String, String> params) throws IOException {
+      System.out.println("[Stop VM]");
       Thread script = new Thread(new TaskExecutor("stop"));
       script.start();
 
@@ -254,6 +290,7 @@ public class Server {
     @SuppressWarnings("unchecked")
     public void getStatus(HttpExchange httpExchange,
                           Map<String, String> params) throws IOException {
+//      System.out.println("[Get VM status]");
       // Build response
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
@@ -273,12 +310,15 @@ public class Server {
     }
 
     public void getVMAddr(HttpExchange httpExchange, Map<String, String> params) throws IOException {
+      System.out.println("[Get VM Address]");
       // Build response
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
 
       JSONObject obj = new JSONObject();
-      synchronized (vmAddr) { obj.put("addr", vmAddr); }
+      synchronized (vmAddr) {
+        obj.put("addr", vmAddr);
+      }
 
       str.append(obj.toJSONString());
       str.append(");");
@@ -310,12 +350,20 @@ public class Server {
       status.put("master_elected", false);
       status.put("hadoop_started", false);
     }
+    vmNumber = Integer.parseInt(args[0]);
+    localhost_port = 12000 + vmNumber;
+    receive_port = 14000 + vmNumber;
+
+    vmName = "frosty-" + vmNumber;
+
 
 //    Scanner in = new Scanner(System.in);
 //    System.out.println("Port number:");
 //    int port = in.nextInt();
-//    Server s = new Server(port);
-    System.out.println("Start server");
-    Server s = new Server(8080);
+//    System.out.println("VM name:");
+//    vmName = in.next();
+    Server s = new Server(localhost_port);
+//    Server s = new Server(8080);
+    System.out.println("Server on");
   }
 }

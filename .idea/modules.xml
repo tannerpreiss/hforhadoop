@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/dependencies.iml" filepath="$PROJECT_DIR$/dependencies.iml" />
+      <module fileurl="file://$PROJECT_DIR$/json-simple.iml" filepath="$PROJECT_DIR$/json-simple.iml" />
     </modules>
   </component>
 </project>
-

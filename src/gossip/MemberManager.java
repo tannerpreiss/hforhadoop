@@ -1,6 +1,5 @@
 package gossip;
 
-import logger.LogType;
 import logger.Logger;
 import org.json.simple.JSONArray;
 
@@ -56,7 +55,7 @@ public class MemberManager {
     for (Member remoteMember : remoteList) {
       if (cluster_info.hasMember(remoteMember)) {
         // The remote member matches a local member. Synchronize heartbeats.
-        log.addInfo("MERGE: Synchronize remote member - " + remoteMember.getAddress());
+        log.addDebug("MERGE: Synchronize remote member - " + remoteMember.getAddress());
         synchronizeHeartbeats(remoteMember);
         synchronizeMasterStatus(remoteMember);
       } else {
@@ -70,12 +69,12 @@ public class MemberManager {
           Member localDeadMember = deadList.get(deadList.indexOf(remoteMember));
           if (remoteMember.getHeartbeat() > localDeadMember.getHeartbeat()) {
             // it's baa-aack
-            log.addInfo("MERGE: Revive member");
+            log.addDebug("MERGE: Revive member");
             reviveMember(localDeadMember, remoteMember);
           } // else ignore
         } else {
           // brand spanking new member - welcome
-          log.addInfo("MERGE: Add remote member - " + remoteMember);
+          log.addDebug("MERGE: Add remote member - " + remoteMember);
           insertMember(remoteMember, false);
         }
       }
@@ -96,7 +95,7 @@ public class MemberManager {
    */
   synchronized public void addNewMember(Member newMember, boolean addAsMe) {
     if (cluster_info.hasMember(newMember)) {
-      log.addWarning("ADD: Could not add duplicate member - " + newMember);
+      log.addDebug("ADD: Could not add duplicate member - " + newMember);
     } else {
       insertMember(newMember, addAsMe);
     }
@@ -195,16 +194,20 @@ public class MemberManager {
         int port = Integer.parseInt(address.split(":")[1]);
 
         InetAddress dest = InetAddress.getByName(host);
-        log.addInfo("SEND: Sending member list to - " + dest);
+        log.addDebug("SEND: Sending member list to - " + dest);
 
-        //simulate some packet loss ~25%
-        int percentToSend = random.nextInt(100);
-        if (percentToSend > 25) {
-          DatagramSocket socket = new DatagramSocket();
-          DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length, dest, port);
-          socket.send(datagramPacket);
-          socket.close();
-        }
+//        simulate some packet loss ~25%
+//        int percentToSend = random.nextInt(100);
+//        if (percentToSend > 25) {
+//          DatagramSocket socket = new DatagramSocket();
+//          DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length, dest, port);
+//          socket.send(datagramPacket);
+//          socket.close();
+//        }
+        DatagramSocket socket = new DatagramSocket();
+        DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length, dest, port);
+        socket.send(datagramPacket);
+        socket.close();
       }
 
     } catch (IOException e1) {
@@ -235,7 +238,7 @@ public class MemberManager {
         }
       } while (member.getAddress().equals(me.getAddress()));
     } else {
-      log.addInfo("ALONE: I'm alone in this world.");
+      log.addDebug("ALONE: I'm alone in this world.");
     }
 
     return member;

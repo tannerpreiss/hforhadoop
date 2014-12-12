@@ -53,16 +53,24 @@ public class Node implements NotificationListener {
       group = InetAddress.getByName(config.MULTICAST_ADDRESS);
 
       networkInterface = NetworkInterface.getByName(config.INTERFACE_NAME);
-      address = new InetSocketAddress(group, config.MULTICAST_PORT);
 
+//      String addr_temp = networkInterface.getInetAddresses().nextElement().getHostAddress();
+//      String myIpAddress = InetAddress.getLocalHost().getHostAddress();
+      String myIpAddress = networkInterface.getInetAddresses().nextElement().getHostAddress();
+      this.myAddress = myIpAddress + ":" + config.GOSSIP_PORT;
+      log.addInfo("NODE: IP address - " + myIpAddress);
+
+      address = new InetSocketAddress(group, config.MULTICAST_PORT);
       multicastServer = new MulticastSocket(config.MULTICAST_PORT);
-      multicastServer.joinGroup(address, networkInterface);
+//      multicastServer.joinGroup(address, networkInterface);
+      multicastServer.joinGroup(group);
+      multicastServer.setNetworkInterface(NetworkInterface.getByName(config.INTERFACE_NAME));
+      log.addInfo("NODE: Multicast IP - " + config.MULTICAST_ADDRESS + ":" + config.MULTICAST_PORT + " # " + multicastServer.getInterface().getHostAddress());
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    String myIpAddress = InetAddress.getLocalHost().getHostAddress();
-    this.myAddress = myIpAddress + ":" + config.GOSSIP_PORT;
+
 
     gossipServer = new DatagramSocket(config.GOSSIP_PORT);
 
@@ -149,7 +157,7 @@ public class Node implements NotificationListener {
             // get their responses!
             byte[] buf = new byte[config.PACKET_SIZE];
             recv = new DatagramPacket(buf, buf.length);
-            log.addInfo("RECV: Waiting for multicast message");
+            log.addDebug("RECV: Waiting for multicast message");
 
             multicastServer.receive(recv);
 
@@ -160,9 +168,9 @@ public class Node implements NotificationListener {
             if (read_obj instanceof Member) {
               newNode = (Member) read_obj;
               if (newNode.getAddress().equals(myAddress)) {
-                log.addInfo("RECV: Received multicast message (FROM ME) - " + newNode);
+                log.addDebug("RECV: Received multicast message (FROM ME) - " + newNode);
               } else {
-                log.addInfo("RECV: Received multicast message - " + newNode);
+                log.addDebug("RECV: Received multicast message - " + newNode);
               }
             }
           } while (newNode == null || newNode.getAddress().equals(myAddress));
@@ -212,9 +220,9 @@ public class Node implements NotificationListener {
 //          ByteArrayInputStream bais = new ByteArrayInputStream(p.getData());
 //          ObjectInputStream ois = new ObjectInputStream(bais);
           ClusterInfo info = ClusterInfo.deserializeClusterInfo(p.getData());
-          log.addInfo("RECV: Receiving member list\nFrom: " +
-                     p.getAddress() + "\n" +
-                     info.toString());
+          log.addDebug("RECV: Receiving member list\nFrom: " +
+                       p.getAddress() + "\n" +
+                       info.toString());
           markInGroup();
           memberManager.mergeLists(info);
           // Run Hadoop if necessary
@@ -259,7 +267,7 @@ public class Node implements NotificationListener {
       node.send_multicast();
     }
 
-    log.addInfo("IN GROUP!");
+    log.addInfo("GOSSIP: In Group!");
     log.markInGroup();
     executor.execute(new MembershipGossiper());
 
@@ -285,8 +293,11 @@ public class Node implements NotificationListener {
       // Send member object to multicast address
       InetAddress group = InetAddress.getByName(config.MULTICAST_ADDRESS);
       DatagramPacket member_obj = new DatagramPacket(buf, buf.length, group, config.MULTICAST_PORT);
-      log.addInfo("SEND: Sent multicast message");
-      multicastServer.send(member_obj);
+      log.addDebug("SEND: Send multicast message");
+      MulticastSocket multi_socket = new MulticastSocket();
+      multi_socket.setNetworkInterface(NetworkInterface.getByName(config.INTERFACE_NAME));
+      multi_socket.send(member_obj);
+      multi_socket.close();
       Thread.sleep(config.MULTICAST_WAIT);
     } catch (Exception e) {
       e.printStackTrace();

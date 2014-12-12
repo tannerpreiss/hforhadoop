@@ -1,0 +1,17 @@
+2014.12.12.16.48.08
+INFO	LOGGER: Start log server
+INFO	LOGGER: Waiting for host ping on addr: 192.168.1.22:9090
+INFO	NODE: IP address - 192.168.1.22
+INFO	NODE: Multicast IP - 228.5.6.7:6789 # 192.168.1.22
+INFO	HADOOP: Waiting for signal to run Hadoop...
+INFO	ADD: Added new member to list - addr: 192.168.1.22:9999, h_beat: 0, time: 1418402888320
+INFO	ADD: Add myself to the member list - addr: 192.168.1.22:9999, h_beat: 0, time: 1418402888320
+DEBUG	RECV: Waiting for multicast message
+DEBUG	SEND: Send multicast message
+INFO	LOGGER: Received host ping - /192.168.1.58:14001
+INFO	LOGGER: Send ping back to host
+DEBUG	SEND: Send multicast message
+DEBUG	SEND: Send multicast message
+DEBUG	SEND: Send multicast message
+DEBUG	SEND: Send multicast message
+Goodbye my friends...

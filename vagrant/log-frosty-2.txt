@@ -1,0 +1,11 @@
+2014.12.12.15.35.13
+INFO	LOGGER: Start log server
+INFO	LOGGER: Waiting for host ping on addr: 192.168.1.132:9090
+INFO	NODE: IP address - 192.168.1.132
+INFO	NODE: Multicast IP - 228.5.6.7:6789 # 0.0.0.0
+INFO	HADOOP: Waiting for signal to run Hadoop...
+INFO	ADD: Added new member to list - addr: 192.168.1.132:9999, h_beat: 0, time: 1418398513785
+INFO	ADD: Add myself to the member list - addr: 192.168.1.132:9999, h_beat: 0, time: 1418398513785
+INFO	LOGGER: Received host ping - /192.168.1.130:14002
+INFO	LOGGER: Send ping back to host
+Goodbye my friends...
