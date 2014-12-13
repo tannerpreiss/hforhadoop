@@ -106,20 +106,12 @@ public class Server {
     public void runStart() {
 //      Shell.executeCommand("python start_vm.py");
       String result = Shell.executeCommand("./vagrant_start.sh " + vmName).trim();
+      if (result.indexOf("\n") != -1) {
+        result = result.substring(0, result.indexOf("\n")).trim();
+      }
       synchronized (vmAddr) {
         vmAddr = result;
       }
-//      printLog("VM is started");
-//      synchronized (vmAddr) {
-//        while (vmAddr.equals("")) {
-//          vmAddr = Shell.executeCommand("python get_ip.py").trim();
-//          try {
-//            Thread.sleep(2000);
-//          } catch (InterruptedException e) {
-//            e.printStackTrace();
-//          }
-//        }
-//      }
       printLog("VM started - [" + vmName + "] IP Address: " + vmAddr);
       synchronized (status) {
         status.put("virtual_machine", Server.getTimeStamp());
