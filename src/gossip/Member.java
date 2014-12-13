@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 public class Member implements Serializable {
@@ -69,10 +70,12 @@ public class Member implements Serializable {
 
 	@Override
 	public String toString() {
-    return "addr: " + address +
-           ", h_beat: " + heartbeat +
-           ", time: " + timestamp +
-           (is_master ? " M" : "");
+		String date = new SimpleDateFormat("h:m:s").format(new Timestamp(timestamp));
+		return String.format("%s %s %s%s", address, date, heartbeat, is_master ? " M" : "");
+//    return "Addr: " + address +
+//           ", beats: " + heartbeat +
+//           ", t: " + date +
+//           (is_master ? " M" : "");
 	}
 
   @SuppressWarnings("unchecked")

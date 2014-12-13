@@ -5,3 +5,5 @@ out
 
 .DS_Store
 classes
+
+**/__init__.py

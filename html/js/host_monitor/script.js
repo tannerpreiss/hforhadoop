@@ -1,121 +1,151 @@
-// Script.js
-var PORT_NUM;
+
+var BASE_PORT;
+var HOST_NAME;
 var POLL_FREQ;
-var KEEP_POLLING;
-var GOSSIP_RUNNING = false;
+var IS_POLLING;
+var POLLING_LIST = [];
+var VM_NUM = 5;
+var counter = 0;
 
 $(document).ready(function() {
-  $('#start_btn').click(start);
-  $('#stop_btn').click(stop);
-  $('.logger_frame').load(function () {
-    $(this).height($(this).contents().height());
-//    $(this).width($(this).contents().width());
-  });
+  BASE_PORT = parseInt($('#port_num').val());
+  HOST_NAME = $('#host_name').val();
+  POLL_FREQ = parseInt($('#poll_freq').val());
+  IS_POLLING = false;
+  for (var i = 1; i <= VM_NUM; i++) {
+    POLLING_LIST[i] = false;
+  }
+  $('button').click(buttonClick);
 });
 
-function start() {
-  PORT_NUM = $('#port_num').val();
-  POLL_FREQ = $('#poll_freq').val();
-  disable("#port_num", true);
-  disable("#poll_freq", true);
-  var url = "http://localhost:" + PORT_NUM + "/start?callback=?";
-  $.getJSON(url, function(data) {
-    KEEP_POLLING = true;
-    disable("#stop_btn", false);
-    disable("#start_btn", true);
-    $('.status_container').addClass("animate");
-    poll_status();
-  }).fail(function() {
-    disable("#port_num", false);
-    disable("#poll_freq", false);
-    alert("Failed to start");
-  });
-}
-
-function stop() {
-  var url = "http://localhost:" + PORT_NUM + "/stop?callback=?";
-  $.getJSON(url, function(data) {
-  }).fail(function() {
-    alert("Failed to stop");
-  });
-
-  KEEP_POLLING = false;
-  disable("#stop_btn", true);
-  disable("#start_btn", false);
-  $('.status_container').removeClass("animate");
-  $('.status_container .state').removeClass("done").addClass("in_progress");
-  $('#port_num').prop("disabled", false);
-  disable("#port_num", false);
-  disable("#poll_freq", false);
-  poll();
-}
-
-function poll_status() {
-  if (KEEP_POLLING) {
-    poll();
-    setTimeout(poll_status, POLL_FREQ);
+function buttonClick(event) {
+  var elem = $(event.target);
+  var num = elem.data("num");
+  if (elem.hasClass("start")) {
+    startVM(num);
   } else {
+    stopVM(num);
+  }
+}
 
+function startVM(num) {
+  //console.log(url);
+  //$('#frosty-' + num + '-btn')
+  //  .removeClass('start')
+  //  .addClass('stop')
+  //  .html('STOP');
+  //startPolling(num);
+  $.getJSON(buildURL(num, "start"), function(data) {
+    $('#frosty-' + num + '-btn')
+      .removeClass('start')
+      .addClass('stop')
+      .html('STOP');
+    startPolling(num);
+  }).fail(function() {
+    alert("Could not launch VM for frosty-" + num);
+  });
+}
+
+function stopVM(num) {
+  //console.log(url);
+  //$('#frosty-' + num + '-btn')
+  //  .removeClass('stop')
+  //  .addClass('start')
+  //  .html('START');
+  //stopPolling(num);
+  $.getJSON(buildURL(num, "stop"), function(data) {
+    $('#frosty-' + num + '-btn')
+      .removeClass('stop')
+      .addClass('start')
+      .html('START');
+    stopPolling(num);
+  }).fail(function() {
+    alert("Could not stop VM for frosty-" + num);
+  });
+}
+
+function startPolling(num) {
+  POLLING_LIST[num] = true;
+  $('td.frosty-' + num)
+    .addClass('in-progress');
+  $($('td.frosty-' + num + '.in-progress')
+    .get(0)).addClass('animate');
+  if (!IS_POLLING) {
+    IS_POLLING = true;
+    $('input').prop('disabled', true);
+    poll();
+  }
+}
+
+function stopPolling(num) {
+  POLLING_LIST[num] = false;
+  var flag = false;
+  $('.frosty-' + num + '.animate').removeClass('animate');
+  $('.frosty-' + num + '-vmlog').html("");
+  $('.frosty-' + num + '-hlog').html("");
+  for (var i = 0; i < VM_NUM; i++) {
+    if (POLLING_LIST[i]) {
+      flag = true;
+      break;
+    }
+  }
+  if (!flag) {
+    IS_POLLING = false;
+    $('input').prop('disabled', false);
   }
 }
 
 function poll() {
-  var url = "http://localhost:" + PORT_NUM + "/status?callback=?";
-  $.getJSON(url, function(data) {
-    update_state(data);
-  }).fail(function() {
-    console.log("Failed to get status");
+  for (var num = 1; num <= VM_NUM; num++) {
+    if (!POLLING_LIST[num]) { continue; }
+    pollCall(num);
+  }
+  setTimeout(poll, POLL_FREQ);
+}
+
+function pollCall(num) {
+  $.getJSON(buildURL(num, "status"), function(data) {
+    updateStatus(num, data);
   });
 }
 
-function disable(elem, enable) {
-  $(elem).prop("disabled", enable);
+function updateStatus(num, data) {
+  var vm = data.virtual_machine;
+  var g = data.gossip;
+  var ig = data.in_group;
+  var me = data.master_elected;
+  var h = data.hadoop_started;
+  if (vm != null) { updateCell(num, 'start-vm', vm); }
+  if (g != null) { updateCell(num, 'start-gossip', g); }
+  if (ig != null) { updateCell(num, 'join-group', ig); }
+  if (me != null) { updateCell(num, 'elect-master', me); }
+  if (h != null) { updateCell(num, 'launch-hadoop', h); }
+  $('td.frosty-' + num).removeClass('animate');
+  $($('td.frosty-' + num + '.in-progress')
+    .get(0)).addClass('animate');
 }
 
-function update_state(data) {
-  set_done($('.state.vm'), data.virtual_machine);
-  set_done($('.state.g'), data.gossip);
-  set_done($('.state.ig'), data.in_group);
-  set_done($('.state.ms'), data.master_elected);
-  set_done($('.state.h'), data.hadoop_started);
-  var in_progress = $('.status_container.animate .in_progress');
-  in_progress.removeClass('animate');
-  $(in_progress.get(0)).addClass('animate');
-  if (!GOSSIP_RUNNING && data.gossip) {
-    launchIFrame();
-
+function updateCell(num, state, value) {
+  $('.' + state + ' td.frosty-' + num)
+    .removeClass('in-progress')
+    .addClass('done')
+    .html(value);
+  if (state === "start-vm" && $('.frosty-' + num + '-vmlog').html() === "") {
+    $.getJSON(buildURL(num, "vmaddr"), function(data) {
+      var ip = data.addr;
+      var url = "logger.html?vmaddr=" + ip;
+      var vmlink = '<a href="' + url + '" target="_blank">VM</a>';
+      var hlink = '<a href="http://' + ip + ':50070" target="_blank">Hadoop</a>';
+      $('.frosty-' + num + '-vmlog').html(vmlink);
+      $('.frosty-' + num + '-hlog').html(hlink);
+    });
   }
 }
 
-function launchIFrame() {
-  var url = "http://localhost:" + PORT_NUM + "/vmaddr?callback=?";
-  $.getJSON(url, function(data) {
-    GOSSIP_RUNNING = true;
-    addr = data.addr;
-//    var win = window.open(url);
-//    if(win) {
-//      //Browser has allowed it to be opened
-//      win.focus();
-//    } else {
-//      //Broswer has blocked it
-//      alert('Please allow popups for this site');
-//    }
-    var url = "logger.html?vmaddr=" + addr;
-    var link = '<a class="logger_link" href="' + url  + '" target="_blank">Go to VM Logger</a>';
-    $('.container').append(link);
-    url = "http://" + addr + ":50070";
-    link = '<a class="hadoop_link" href="' + url  + '" target="_blank">Go to Hadoop Logger</a>';
-    $('.container').append(link);
-  }).fail(function() {
-    console.log("Failed to get vm address");
-  });
+function buildURL(num, call) {
+  var port = BASE_PORT + num;
+  var uri = "/" + call + "?callback=?";
+  var url = "http://" + HOST_NAME + ":" + port + uri;
+  console.log(url);
+  return url;
 }
-
-function set_done(elem, is_done) {
-  if (is_done && elem.hasClass("in_progress")) {
-    elem.addClass("done").removeClass("in_progress");
-  } else if (!is_done && elem.hasClass("done")) {
-    elem.removeClass("done").addClass("in_progress");
-  }
-}
-

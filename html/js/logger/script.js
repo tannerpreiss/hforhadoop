@@ -47,7 +47,10 @@ function clear_data() {
 function toggle_events_visibility(e) {
   var elem = $(this);
   var type = elem.attr("data-type");
-  if (type === "info") {
+  if (type === "debug") {
+    $('.event_table').toggleClass("hide_debug");
+    $('#toggle_debug').toggleClass("hidden");
+  } else if (type === "info") {
     $('.event_table').toggleClass("hide_info");
     $('#toggle_info').toggleClass("hidden");
   } else if (type === "warning") {

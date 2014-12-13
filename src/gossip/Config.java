@@ -11,6 +11,7 @@ public class Config {
   public String MULTICAST_ADDRESS; // Address for multicast request
   public int    MULTICAST_WAIT;
   public String INTERFACE_NAME; // Interface name
+  public String MULTICAST_INTERFACE_NAME;
   public int    GOSSIP_PORT; // Port for gossip requests
   public int    PACKET_SIZE; // Size of buffer for receiving packets
   public int    NODE_THRESHOLD; // Number of nodes before election
@@ -26,11 +27,14 @@ public class Config {
     config.MULTICAST_ADDRESS = "228.5.6.7";
     config.MULTICAST_WAIT    = 5000;
     config.INTERFACE_NAME    = "eth1";
-    config.GOSSIP_PORT       = 9999;
+//    config.INTERFACE_NAME    = "en0";
+    config.MULTICAST_INTERFACE_NAME    = "eth1";
+//    config.MULTICAST_INTERFACE_NAME    = "en0";
+    config.GOSSIP_PORT       = 16000;
     config.PACKET_SIZE       = 1024 * 4;
     config.NODE_THRESHOLD    = 3;
     config.PING_PORT         = 9090;
-    config.PRINT_DEBUG = true;
+    config.PRINT_DEBUG = false;
     return config;
   }
 }

@@ -1,10 +1,9 @@
 package hadoop;
 
-import gossip.Gossip;
 import gossip.Member;
 import gossip.MemberManager;
 import logger.Logger;
-import vm_control.Shell;
+import cmd.Shell;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -83,7 +82,7 @@ public class Hadoop implements Runnable {
     name= "slave" + name;
     log.addInfo("HADOOP: Updating XML with master - " + name);
 
-    String findreplace_cmd = "python3 fix_xml_files.py -m " + name;
+    String findreplace_cmd = "python3 vm/fix_xml_files.py -m " + name;
 
     Shell.executeCommand(findreplace_cmd);
     return true;
@@ -95,7 +94,7 @@ public class Hadoop implements Runnable {
 //    //TODO: replace with master command
 //    String start_master_cmd = "start-master.sh";
 
-    Shell.executeCommand("start-master.sh");
+    Shell.executeCommand("vm/start-master.sh");
   }
 
   public void startSlaveHadoop() {
@@ -104,7 +103,7 @@ public class Hadoop implements Runnable {
 //    //TODO: replace with slave command
 //    String start_slave_cmd = "start-slave.sh";
 
-    Shell.executeCommand("start-slave.sh");
+    Shell.executeCommand("vm/start-slave.sh");
 
   }
 

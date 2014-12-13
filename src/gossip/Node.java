@@ -50,22 +50,22 @@ public class Node implements NotificationListener {
     InetAddress group;
 
     try {
-      group = InetAddress.getByName(config.MULTICAST_ADDRESS);
-
-      networkInterface = NetworkInterface.getByName(config.INTERFACE_NAME);
-
+//      networkInterface = NetworkInterface.getByName(config.INTERFACE_NAME);
 //      String addr_temp = networkInterface.getInetAddresses().nextElement().getHostAddress();
 //      String myIpAddress = InetAddress.getLocalHost().getHostAddress();
-      String myIpAddress = networkInterface.getInetAddresses().nextElement().getHostAddress();
+      String myIpAddress = NetworkInterface.getByName(config.INTERFACE_NAME)
+                                           .getInetAddresses()
+                                           .nextElement()
+                                           .getHostAddress();
       this.myAddress = myIpAddress + ":" + config.GOSSIP_PORT;
       log.addInfo("NODE: IP address - " + myIpAddress);
 
-      address = new InetSocketAddress(group, config.MULTICAST_PORT);
+//      address = new InetSocketAddress(group, config.MULTICAST_PORT);
       multicastServer = new MulticastSocket(config.MULTICAST_PORT);
 //      multicastServer.joinGroup(address, networkInterface);
-      multicastServer.joinGroup(group);
-      multicastServer.setNetworkInterface(NetworkInterface.getByName(config.INTERFACE_NAME));
-      log.addInfo("NODE: Multicast IP - " + config.MULTICAST_ADDRESS + ":" + config.MULTICAST_PORT + " # " + multicastServer.getInterface().getHostAddress());
+      multicastServer.joinGroup(InetAddress.getByName(config.MULTICAST_ADDRESS));
+      multicastServer.setNetworkInterface(NetworkInterface.getByName(config.MULTICAST_INTERFACE_NAME));
+      log.addInfo("NODE: Multicast IP - " + config.MULTICAST_ADDRESS + ":" + config.MULTICAST_PORT);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -168,7 +168,7 @@ public class Node implements NotificationListener {
             if (read_obj instanceof Member) {
               newNode = (Member) read_obj;
               if (newNode.getAddress().equals(myAddress)) {
-                log.addDebug("RECV: Received multicast message (FROM ME) - " + newNode);
+                log.addDebug("RECV: Received multicast message (ME) - " + newNode);
               } else {
                 log.addDebug("RECV: Received multicast message - " + newNode);
               }
@@ -295,7 +295,7 @@ public class Node implements NotificationListener {
       DatagramPacket member_obj = new DatagramPacket(buf, buf.length, group, config.MULTICAST_PORT);
       log.addDebug("SEND: Send multicast message");
       MulticastSocket multi_socket = new MulticastSocket();
-      multi_socket.setNetworkInterface(NetworkInterface.getByName(config.INTERFACE_NAME));
+//      multi_socket.setNetworkInterface(NetworkInterface.getByName(config.INTERFACE_NAME));
       multi_socket.send(member_obj);
       multi_socket.close();
       Thread.sleep(config.MULTICAST_WAIT);

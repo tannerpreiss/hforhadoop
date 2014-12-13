@@ -15,26 +15,107 @@
 <body>
 <article class="container">
   <h1>Ephemeral Hadoop</h1>
-  <div class="input_container">
-    <div class="input_field">
-      <label for="port_num">Localhost port number:</label>
-      <input id="port_num" type="text" value="8080"/>
-    </div>
-    <div class="input_field">
-      <label for="poll_freq">Poll frequency:</label>
+  <div class="input-container">
+    <div class="input-field">
+      <label for="poll_freq">Poll Freq:</label>
       <input id="poll_freq" type="text" value="2000"/>
     </div>
+    <div class="input-field">
+      <label for="port_num">Port base:</label>
+      <input id="port_num" type="text" value="12000"/>
+    </div>
+    <div class="input-field">
+      <label for="host_name">Host Address:</label>
+      <input id="host_name" type="text" value="localhost"/>
+    </div>
   </div>
-  <div class="button_container">
-    <button id="start_btn">Start</button>
-    <button id="stop_btn" disabled>Stop</button>
-  </div>
-  <div class="status_container">
-    <div class="state vm in_progress">Start Virtual Machine<span>&#10003;</span></div>
-    <div class="state g in_progress">Start Gossip Protocol<span>&#10003;</span></div>
-    <div class="state ig in_progress">Join Gossip Network<span>&#10003;</span></div>
-    <div class="state ms in_progress">Elect Master<span>&#10003;</span></div>
-    <div class="state h in_progress">Launch Hadoop<span>&#10003;</span></div>
+  <div class="status-container">
+    <table class="status-table">
+      <colgroup>
+        <col class="col-1"/>
+        <col class="col-2"/>
+        <col class="col-3"/>
+        <col class="col-4"/>
+        <col class="col-5"/>
+        <col class="col-6"/>
+      </colgroup>
+      <thead>
+      <tr>
+        <th>Stages</th>
+        <th>frosty-1</th>
+        <th>frosty-2</th>
+        <th>frosty-3</th>
+        <th>frosty-4</th>
+        <th>frosty-5</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td></td>
+        <td><button data-num="1" id="frosty-1-btn" class="start">START</button></td>
+        <td><button data-num="2" id="frosty-2-btn" class="start">START</button></td>
+        <td><button data-num="3" id="frosty-3-btn" class="start">START</button></td>
+        <td><button data-num="4" id="frosty-4-btn" class="start">START</button></td>
+        <td><button data-num="5" id="frosty-5-btn" class="start">START</button></td>
+      </tr>
+      <tr class="start-vm">
+        <td>Start VM</td>
+        <td class="frosty-1"></td>
+        <td class="frosty-2"></td>
+        <td class="frosty-3"></td>
+        <td class="frosty-4"></td>
+        <td class="frosty-5"></td>
+      </tr>
+      <tr class="start-gossip">
+        <td>Start Gossip</td>
+        <td class="frosty-1"></td>
+        <td class="frosty-2"></td>
+        <td class="frosty-3"></td>
+        <td class="frosty-4"></td>
+        <td class="frosty-5"></td>
+      </tr>
+      <tr class="join-group">
+        <td>Join Group</td>
+        <td class="frosty-1"></td>
+        <td class="frosty-2"></td>
+        <td class="frosty-3"></td>
+        <td class="frosty-4"></td>
+        <td class="frosty-5"></td>
+      </tr>
+      <tr class="elect-master">
+        <td>Elect Master</td>
+        <td class="frosty-1"></td>
+        <td class="frosty-2"></td>
+        <td class="frosty-3"></td>
+        <td class="frosty-4"></td>
+        <td class="frosty-5"></td>
+      </tr>
+      <tr class="launch-hadoop">
+        <td>Launch Hadoop</td>
+        <td class="frosty-1"></td>
+        <td class="frosty-2"></td>
+        <td class="frosty-3"></td>
+        <td class="frosty-4"></td>
+        <td class="frosty-5"></td>
+      </tr>
+      <tr class="vm-logger">
+        <td>VM Logger</td>
+        <td class="frosty-1-vmlog"></td>
+        <td class="frosty-2-vmlog"></td>
+        <td class="frosty-3-vmlog"></td>
+        <td class="frosty-4-vmlog"></td>
+        <td class="frosty-5-vmlog"></td>
+      </tr>
+      <tr class="hadoop-logger">
+        <td>Hadoop Logger</td>
+        <td class="frosty-1-hlog"></td>
+        <td class="frosty-2-hlog"></td>
+        <td class="frosty-3-hlog"></td>
+        <td class="frosty-4-hlog"></td>
+        <td class="frosty-5-hlog"></td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </article>
 </body>

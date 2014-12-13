@@ -218,6 +218,9 @@ button.confirm {
 body {
   font-size: 100%; }
 
+h1 {
+  text-align: center; }
+
 .container {
   max-width: 95%;
   margin: 0 auto;
@@ -328,6 +331,8 @@ body {
       .log_info .events tr td:nth-child(3) {
         text-align: left;
         width: 50em; }
+    .log_info .events .event_table.hide_debug tr[data-event-type="DEBUG"] {
+      display: none; }
     .log_info .events .event_table.hide_info tr[data-event-type="INFO"] {
       display: none; }
     .log_info .events .event_table.hide_warning tr[data-event-type="WARNING"] {

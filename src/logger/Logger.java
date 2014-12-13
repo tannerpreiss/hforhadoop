@@ -47,7 +47,7 @@ public class Logger {
     events.add(e);
     if (printToConsole) {
       if (!config.PRINT_DEBUG && type == LogType.DEBUG) { return; }
-      System.out.println(e);
+      System.out.println(String.format("> %s", e));
     }
   }
 
@@ -127,7 +127,7 @@ public class Logger {
 
     @Override
     public String toString() {
-      return type + "\t" + msg;
+      return String.format("%-7s %s", type, msg);
     }
   }
 }

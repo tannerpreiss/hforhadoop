@@ -62,6 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   
   (1..5).each do |i|
     config.vm.define "frosty-#{i}" do |node|
+      node.vm.provision :shell, inline: "sudo route add -net 224.0.0.0 netmask 240.0.0.0 dev eth1 >/dev/null 2>&1"
       node.vm.provision :shell, inline: "java -jar /vagrant/gossip.jar y y 8001 > /vagrant/log-frosty-#{i}.txt 2>&1 &"
     end
   end
