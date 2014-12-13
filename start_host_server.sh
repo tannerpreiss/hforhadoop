@@ -25,6 +25,7 @@ do
     cmd="java -jar host_server.jar $i & >> log-host-server.txt 2>&1"
     printf "==> Run frosty-$i: $cmd\n"
     eval $cmd
+    sleep 3
 done
 
 tail -f log-host-server.txt
