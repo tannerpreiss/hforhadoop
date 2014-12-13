@@ -1,12 +1,12 @@
 package hostserver;
 
+import cmd.Shell;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import gossip.Config;
 import org.json.simple.JSONObject;
-import cmd.Shell;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,7 +30,7 @@ public class Server {
   private static String        vmAddr      = "";
   private static AtomicBoolean keepPinging = new AtomicBoolean(true);
   private static String vmName;
-  private static int        vmNumber      = 0;
+  private static int vmNumber = 0;
   private static int localhost_port;
   private static int receive_port;
   private static boolean format_time = true;
