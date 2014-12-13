@@ -7,62 +7,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/one-liners.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/Communicator/Communicator.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/Communicator/ListManager.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/Communicator/MulticastListener.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/Multicast/Driver.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/Multicast/MulticastReciever.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/Multicast/MulticastSender.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/datagram/QuoteClient.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/datagram/QuoteServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/datagram/QuoteServerThread.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/datagram/multicast/MulticastClient.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/datagram/multicast/MulticastServer.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/datagram/multicast/MulticastServerThread.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/examples/net/Network.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/vm_control/VirtualMachine.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/vm_control/VirtualMachineController.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/start.sh" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/stop.sh" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/fix_xml_files.py" afterPath="$PROJECT_DIR$/vm/fix_xml_files.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/golden-core-site.xml" afterPath="$PROJECT_DIR$/vm/golden-core-site.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/golden-yarn-site.xml" afterPath="$PROJECT_DIR$/vm/golden-yarn-site.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/hadoop" afterPath="$PROJECT_DIR$/vm/hadoop" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/hadoop.pub" afterPath="$PROJECT_DIR$/vm/hadoop.pub" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/prepend_etc_host.py" afterPath="$PROJECT_DIR$/vm/prepend_etc_host.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/vm_control/Shell.java" afterPath="$PROJECT_DIR$/src/cmd/Shell.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/start-master.sh" afterPath="$PROJECT_DIR$/vm/start-master.sh" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/start-slave.sh" afterPath="$PROJECT_DIR$/vm/start-slave.sh" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/vagrant/show_log.sh" afterPath="$PROJECT_DIR$/vagrant/reset_logs.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/gossip.jar" afterPath="$PROJECT_DIR$/vagrant/gossip.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/host_server.jar" afterPath="$PROJECT_DIR$/host_server.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Config.java" afterPath="$PROJECT_DIR$/src/gossip/Config.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Gossip.java" afterPath="$PROJECT_DIR$/src/gossip/Gossip.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/hadoop/Hadoop.java" afterPath="$PROJECT_DIR$/src/hadoop/Hadoop.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/logger/Logger.java" afterPath="$PROJECT_DIR$/src/logger/Logger.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Member.java" afterPath="$PROJECT_DIR$/src/gossip/Member.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gossip/Node.java" afterPath="$PROJECT_DIR$/src/gossip/Node.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/hostserver/Server.java" afterPath="$PROJECT_DIR$/src/hostserver/Server.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/Vagrantfile" afterPath="$PROJECT_DIR$/vagrant/Vagrantfile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/html/host_monitor.html" afterPath="$PROJECT_DIR$/html/host_monitor.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/log-frosty-1.txt" afterPath="$PROJECT_DIR$/vagrant/log-frosty-1.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/log-frosty-2.txt" afterPath="$PROJECT_DIR$/vagrant/log-frosty-2.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/log-frosty-3.txt" afterPath="$PROJECT_DIR$/vagrant/log-frosty-3.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/log-frosty-4.txt" afterPath="$PROJECT_DIR$/vagrant/log-frosty-4.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vagrant/log-frosty-5.txt" afterPath="$PROJECT_DIR$/vagrant/log-frosty-5.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/html/logger.html" afterPath="$PROJECT_DIR$/html/logger.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/html/js/host_monitor/script.js" afterPath="$PROJECT_DIR$/html/js/host_monitor/script.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/html/js/logger/script.js" afterPath="$PROJECT_DIR$/html/js/logger/script.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/start_host_server.sh" afterPath="$PROJECT_DIR$/start_host_server.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/html/css/host_monitor/styles.css" afterPath="$PROJECT_DIR$/html/css/host_monitor/styles.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/html/css/logger/styles.css" afterPath="$PROJECT_DIR$/html/css/logger/styles.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="" />
     <ignored path="cs_4284.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/bin/" />
@@ -939,12 +884,12 @@
       <workItem from="1418255324918" duration="60000" />
       <workItem from="1418255680577" duration="98000" />
       <workItem from="1418255790021" duration="16728000" />
-      <workItem from="1418403097874" duration="8535000" />
+      <workItem from="1418403097874" duration="8587000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="99828000" />
+    <option name="totallyTimeSpent" value="99880000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
