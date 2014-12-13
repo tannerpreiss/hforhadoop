@@ -52,18 +52,24 @@ public class Logger {
   }
 
   synchronized public void markInGroup() {
+    if (!state.get("in_group")) {
+      sendMessage("in_group");
+    }
     state.put("in_group", true);
-    sendMessage("in_group");
   }
 
   synchronized public void markElected() {
+    if (!state.get("master_elected")) {
+      sendMessage("master_elected");
+    }
     state.put("master_elected", true);
-    sendMessage("master_elected");
   }
 
   synchronized public void markHadoop() {
+    if (!state.get("hadoop_started")) {
+      sendMessage("hadoop_started");
+    }
     state.put("hadoop_started", true);
-    sendMessage("hadoop_started");
   }
 
   synchronized public void sendMessage(String msg) {
@@ -73,6 +79,8 @@ public class Logger {
       this.notify();
     }
   }
+
+  synchronized public Boolean getStatus(String key) { return state.get(key); }
 
   synchronized public void addDebug(String str) { addEvent(LogType.DEBUG, str); }
 

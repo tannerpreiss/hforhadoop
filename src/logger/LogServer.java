@@ -44,6 +44,7 @@ public class LogServer {
 
     public void run() {
       try {
+
         // Receive ping from host
         InetAddress addr = NetworkInterface.getByName(config.INTERFACE_NAME).getInetAddresses().nextElement();
         log.addInfo("LOGGER: Waiting for host ping on addr: " + addr.getHostAddress() + ":" + config.PING_PORT);
@@ -62,6 +63,9 @@ public class LogServer {
         packet = new DatagramPacket(buff, buff.length, log.getHostAddr(), log.getHostPort());
         socket.send(packet);
         log.addInfo("LOGGER: Send ping back to host");
+        synchronized (log) {
+          log.notify();
+        }
 
         while (true) {
           synchronized (log) {

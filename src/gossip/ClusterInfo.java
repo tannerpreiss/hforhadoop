@@ -59,7 +59,6 @@ public class ClusterInfo implements Serializable {
     if (remoteInfo.hasElectedMaster()) {
       log.addInfo("ELECT: Remote has already elected master. Update local.");
       master_elected = true;
-      log.markElected();
     }
     // Check if this cluster CAN elect a master
     if (!master_elected && getMemberCount() >= config.NODE_THRESHOLD) {
@@ -78,7 +77,6 @@ public class ClusterInfo implements Serializable {
         master.setAsMaster();
         master_elected = true;
         log.addInfo("ELECT: Master node elected - " + master.toString());
-        log.markElected();
       }
     }
   }

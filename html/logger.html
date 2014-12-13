@@ -23,7 +23,7 @@
       <button id="toggle_events_polling">Start Events</button>
       <button id="toggle_auto_scroll">Disable Auto Scroll</button>
       <button id="clear_data">Clear Data</button>
-      <button class="toggle_events" id="toggle_debug" data-type="debug">Toggle Debug</button>
+      <button class="toggle_events hidden" id="toggle_debug" data-type="debug">Toggle Debug</button>
       <button class="toggle_events" id="toggle_info" data-type="info">Toggle Info</button>
       <button class="toggle_events" id="toggle_warning" data-type="warning">Toggle Warnings</button>
       <button class="toggle_events" id="toggle_error" data-type="error">Toggle Error</button>
@@ -53,7 +53,7 @@
       </table>
     </div>
     <div class="events">
-      <table class="event_table">
+      <table class="event_table hide_debug">
         <thead>
           <tr>
             <th>ID</th>

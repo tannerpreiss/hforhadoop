@@ -17,14 +17,14 @@ public class Member implements Serializable {
    * Similar to the toString in {@link InetSocketAddress}
    */
   private String  address;
-  private int     heartbeat;
+  private long     heartbeat;
   private long    timestamp;
   private boolean is_master;
 
   // Set timer as transient so that it is not sent across the network.
   private transient TimeoutTimer timeoutTimer;
 
-  public Member(String address, int heartbeat, Node node, int t_cleanup, long newTimestamp) {
+  public Member(String address, long heartbeat, Node node, int t_cleanup, long newTimestamp) {
     this.address = address;
     this.heartbeat = heartbeat;
     this.timeoutTimer = new TimeoutTimer(t_cleanup, node, this);
@@ -44,11 +44,11 @@ public class Member implements Serializable {
 		return address;
 	}
 
-	public int getHeartbeat() {
+	public long getHeartbeat() {
 		return heartbeat;
 	}
 
-	public void setHeartbeat(int heartbeat) {
+	public void setHeartbeat(long heartbeat) {
 		this.heartbeat = heartbeat;
 	}
 

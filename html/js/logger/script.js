@@ -193,7 +193,7 @@ function refresh_data_member(data) {
   var d = new Date();
   var t = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
   var time = col.clone().html(t);
-  var num = col.clone().html(mem_count);
+  var num = col.clone().html("count: " + mem_count);
   tbody.append(row.clone().append(label, time, num));
 
   // Replace existing table

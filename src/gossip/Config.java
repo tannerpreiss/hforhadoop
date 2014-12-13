@@ -21,7 +21,7 @@ public class Config {
   public static Config configure() {
     Config config = new Config();
     config.PORT_NUM          = 222;
-    config.GOSSIP_PING       = 5000;
+    config.GOSSIP_PING       = 1000;
     config.GOSSIP_CLEAN      = 40000;
     config.MULTICAST_PORT    = 6789;
     config.MULTICAST_ADDRESS = "228.5.6.7";

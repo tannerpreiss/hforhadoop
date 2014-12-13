@@ -27,14 +27,13 @@ public class Server {
 
   private static Config config = Config.configure();
   private static Map<String, String> status;
-  private static int           counter     = 0;
   private static String        vmAddr      = "";
   private static AtomicBoolean keepPinging = new AtomicBoolean(true);
   private static String vmName;
   private static int vmNumber = 0;
   private static int localhost_port;
   private static int receive_port;
-  private static boolean format_time = true;
+  private static boolean format_time = false;
 
   public static String getTimeStamp() {
     if (format_time) {
@@ -46,6 +45,10 @@ public class Server {
 
   public static void printLog(String str) {
     System.out.println("==> " + vmName + ": " + str);
+  }
+
+  public static void printTime(String str) {
+    System.out.println("[TEST] " + vmName + ": " + str);
   }
 
   public Server(int port) throws Exception {
@@ -104,7 +107,6 @@ public class Server {
     }
 
     public void runStart() {
-//      Shell.executeCommand("python start_vm.py");
       String result = Shell.executeCommand("./vagrant_start.sh " + vmName).trim();
       if (result.indexOf("\n") != -1) {
         result = result.substring(0, result.indexOf("\n")).trim();
@@ -114,7 +116,9 @@ public class Server {
       }
       printLog("VM started - [" + vmName + "] IP Address: " + vmAddr);
       synchronized (status) {
-        status.put("virtual_machine", Server.getTimeStamp());
+        String time = Server.getTimeStamp();
+        status.put("virtual_machine", time);
+        printTime(time + " ");
       }
       printLog("Start to ping VM");
       Thread ping = new Thread(new TaskExecutor("ping"));
@@ -125,7 +129,6 @@ public class Server {
     }
 
     public void runStop() {
-//      Shell.executeCommand("python stop_vm.py");
       String result = Shell.executeCommand("./vagrant_stop.sh " + vmName);
       printLog("VM stopped [" + vmName + "]");
 //      printLog("VM is shutdown");
@@ -173,6 +176,7 @@ public class Server {
 
         // Received acknowledgement
         printLog("Acknowledgement received!");
+        printTime(Server.getTimeStamp() + " start_gossip");
         keepPinging.set(false);
         synchronized (status) {
           status.put("gossip", Server.getTimeStamp());
@@ -191,17 +195,23 @@ public class Server {
           printLog("Received data: " + data);
           if (data.indexOf("in_group") != -1) {
             synchronized (status) {
-              status.put("in_group", Server.getTimeStamp());
+              String time = Server.getTimeStamp();
+              status.put("in_group", time);
+              printTime(time + " in_group");
             }
             count++;
           } else if (data.indexOf("master_elected") != -1) {
             synchronized (status) {
-              status.put("master_elected", Server.getTimeStamp());
+              String time = Server.getTimeStamp();
+              status.put("master_elected", time);
+              printTime(time + " master_elected");
             }
             count++;
           } else if (data.indexOf("hadoop_started") != -1) {
             synchronized (status) {
-              status.put("hadoop_started", Server.getTimeStamp());
+              String time = Server.getTimeStamp();
+              status.put("hadoop_started", time);
+              printTime(time + " hadoop_started");
             }
             count++;
           }
@@ -298,7 +308,6 @@ public class Server {
     @SuppressWarnings("unchecked")
     public void getStatus(HttpExchange httpExchange,
                           Map<String, String> params) throws IOException {
-//      printLog("[Get VM status]");
       // Build response
       StringBuilder str = new StringBuilder();
       str.append(params.get("callback")).append("("); // Set callback function
@@ -369,14 +378,7 @@ public class Server {
 
     vmName = "frosty-" + vmNumber;
 
-
-//    Scanner in = new Scanner(System.in);
-//    printLog("Port number:");
-//    int port = in.nextInt();
-//    printLog("VM name:");
-//    vmName = in.next();
     Server s = new Server(localhost_port);
-//    Server s = new Server(8080);
     printLog("Server on");
   }
 }

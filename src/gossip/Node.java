@@ -50,9 +50,6 @@ public class Node implements NotificationListener {
     InetAddress group;
 
     try {
-//      networkInterface = NetworkInterface.getByName(config.INTERFACE_NAME);
-//      String addr_temp = networkInterface.getInetAddresses().nextElement().getHostAddress();
-//      String myIpAddress = InetAddress.getLocalHost().getHostAddress();
       String myIpAddress = NetworkInterface.getByName(config.INTERFACE_NAME)
                                            .getInetAddresses()
                                            .nextElement()
@@ -60,9 +57,7 @@ public class Node implements NotificationListener {
       this.myAddress = myIpAddress + ":" + config.GOSSIP_PORT;
       log.addInfo("NODE: IP address - " + myIpAddress);
 
-//      address = new InetSocketAddress(group, config.MULTICAST_PORT);
       multicastServer = new MulticastSocket(config.MULTICAST_PORT);
-//      multicastServer.joinGroup(address, networkInterface);
       multicastServer.joinGroup(InetAddress.getByName(config.MULTICAST_ADDRESS));
       multicastServer.setNetworkInterface(NetworkInterface.getByName(config.MULTICAST_INTERFACE_NAME));
       log.addInfo("NODE: Multicast IP - " + config.MULTICAST_ADDRESS + ":" + config.MULTICAST_PORT);
@@ -183,6 +178,7 @@ public class Node implements NotificationListener {
         }
 
         markInGroup(); // Change to inGroup state
+        log.markInGroup();
         memberManager.addNewMember(newNode, false); // Add new member to list
       }
 
@@ -224,10 +220,12 @@ public class Node implements NotificationListener {
                        p.getAddress() + "\n" +
                        info.toString());
           markInGroup();
+          log.markInGroup();
           memberManager.mergeLists(info);
           // Run Hadoop if necessary
           if (!hadoop.isRunning()) {
             if (memberManager.hasElected()) {
+              log.markElected();
               String master = memberManager.getMasterAddr();
               if (master != null) {
                 if (memberManager.getMe().isMaster()) { hadoop.setAsMaster(); }

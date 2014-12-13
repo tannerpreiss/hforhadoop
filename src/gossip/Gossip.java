@@ -22,6 +22,9 @@ public class Gossip {
 
     System.out.println("Starting Gossip: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date()));
     Logger log = getLogger(args);
+    synchronized (log) {
+      log.wait();
+    }
     Node node = new Node(log);
     node.start_listeners(node);
   }
