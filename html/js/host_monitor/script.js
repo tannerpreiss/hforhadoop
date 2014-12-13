@@ -83,6 +83,7 @@ function stopPolling(num) {
   $('.frosty-' + num + '.animate').removeClass('animate');
   $('.frosty-' + num + '-vmlog').html("");
   $('.frosty-' + num + '-hlog').html("");
+  $('.frosty-' + num + '-vmip').html("");
   for (var i = 0; i < VM_NUM; i++) {
     if (POLLING_LIST[i]) {
       flag = true;
@@ -138,6 +139,7 @@ function updateCell(num, state, value) {
       var hlink = '<a href="http://' + ip + ':50070" target="_blank">Hadoop</a>';
       $('.frosty-' + num + '-vmlog').html(vmlink);
       $('.frosty-' + num + '-hlog').html(hlink);
+      $('.frosty-' + num + '-vmip').html(ip);
     });
   }
 }
