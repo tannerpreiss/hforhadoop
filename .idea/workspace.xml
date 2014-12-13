@@ -8,14 +8,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-1.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-2.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-3.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-4.txt" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-5.txt" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/start_host_server.sh" afterPath="$PROJECT_DIR$/start_host_server.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cs_4284.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -142,21 +135,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="start_host_server.sh" pinned="false" current-in-tab="false">
+      <file leaf-file-name="start_host_server.sh" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/start_host_server.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
-              <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.18826135" vertical-offset="0" max-vertical-offset="903">
-              <caret line="10" column="20" selection-start-line="10" selection-start-column="20" selection-end-line="10" selection-end-column="20" />
+            <state vertical-scroll-proportion="0.4894795" vertical-offset="0" max-vertical-offset="903">
+              <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -196,8 +179,8 @@
         <option value="$PROJECT_DIR$/src/hadoop/Hadoop.java" />
         <option value="$PROJECT_DIR$/src/hostserver/Server.java" />
         <option value="$PROJECT_DIR$/setup_vagrant.sh" />
-        <option value="$PROJECT_DIR$/start_host_server.sh" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/start_host_server.sh" />
       </list>
     </option>
   </component>
@@ -915,12 +898,12 @@
       <workItem from="1418255790021" duration="16728000" />
       <workItem from="1418403097874" duration="8587000" />
       <workItem from="1418467039203" duration="9000" />
-      <workItem from="1418487409082" duration="1619000" />
+      <workItem from="1418487409082" duration="2297000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="101508000" />
+    <option name="totallyTimeSpent" value="102186000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1423,18 +1406,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/start_host_server.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
-          <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.18826135" vertical-offset="0" max-vertical-offset="903">
           <caret line="10" column="20" selection-start-line="10" selection-start-column="20" selection-end-line="10" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/start_host_server.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4894795" vertical-offset="0" max-vertical-offset="903">
+          <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
           <folding />
         </state>
       </provider>
