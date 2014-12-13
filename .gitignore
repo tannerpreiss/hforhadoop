@@ -7,3 +7,5 @@ out
 classes
 
 **/__init__.py
+log-host-server.txt
+vagrant/log-frosty-*

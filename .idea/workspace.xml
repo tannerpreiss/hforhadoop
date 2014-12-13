@@ -8,7 +8,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ebbd8d0a-798d-47da-8e88-74b4297eb066" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup_vagrant.sh" afterPath="$PROJECT_DIR$/setup_vagrant.sh" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-1.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-2.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-3.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-4.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/vagrant/log-frosty-5.txt" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/start_host_server.sh" afterPath="$PROJECT_DIR$/start_host_server.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="cs_4284.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -40,24 +47,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/gossip/Config.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="782">
-              <caret line="36" column="30" selection-start-line="36" selection-start-column="30" selection-end-line="36" selection-end-column="30" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Logger.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/logger/Logger.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="2227">
               <caret line="41" column="3" selection-start-line="41" selection-start-column="3" selection-end-line="41" selection-end-column="3" />
               <folding>
-                <element signature="e#3416#3417#0" expanded="true" />
-                <element signature="e#3472#3473#0" expanded="true" />
+                <element signature="imports" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -75,11 +71,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="setup_vagrant.sh" pinned="false" current-in-tab="true">
+      <file leaf-file-name="setup_vagrant.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/setup_vagrant.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.03765227" vertical-offset="0" max-vertical-offset="903">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="187">
               <caret line="2" column="10" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Vagrantfile" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vagrant/Vagrantfile">
+          <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-12.1" vertical-offset="606" max-vertical-offset="1649">
+              <caret line="57" column="54" selection-start-line="57" selection-start-column="54" selection-end-line="57" selection-end-column="54" />
               <folding />
             </state>
           </provider>
@@ -110,7 +119,15 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="1018" max-vertical-offset="1921">
               <caret line="82" column="62" selection-start-line="82" selection-start-column="62" selection-end-line="82" selection-end-column="62" />
-              <folding />
+              <folding>
+                <element signature="imports" expanded="false" />
+                <element signature="e#724#725#0" expanded="false" />
+                <element signature="e#764#765#0" expanded="false" />
+                <element signature="e#948#949#0" expanded="false" />
+                <element signature="e#981#982#0" expanded="false" />
+                <element signature="e#1038#1039#0" expanded="false" />
+                <element signature="e#1066#1067#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -128,18 +145,18 @@
       <file leaf-file-name="start_host_server.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/start_host_server.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="34" max-vertical-offset="204">
-              <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+              <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="script.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/html/js/host_monitor/script.js">
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1965" max-vertical-offset="2669">
-              <caret line="150" column="1" selection-start-line="150" selection-start-column="1" selection-end-line="150" selection-end-column="1" />
+            <state vertical-scroll-proportion="0.18826135" vertical-offset="0" max-vertical-offset="903">
+              <caret line="10" column="20" selection-start-line="10" selection-start-column="20" selection-end-line="10" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -177,10 +194,10 @@
         <option value="$PROJECT_DIR$/html/js/host_monitor/script.js" />
         <option value="$PROJECT_DIR$/src/gossip/Config.java" />
         <option value="$PROJECT_DIR$/src/hadoop/Hadoop.java" />
-        <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/start_host_server.sh" />
         <option value="$PROJECT_DIR$/src/hostserver/Server.java" />
         <option value="$PROJECT_DIR$/setup_vagrant.sh" />
+        <option value="$PROJECT_DIR$/start_host_server.sh" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -282,6 +299,20 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="hforhadoop" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="capstone_cs_4284" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="html" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -884,12 +915,12 @@
       <workItem from="1418255790021" duration="16728000" />
       <workItem from="1418403097874" duration="8587000" />
       <workItem from="1418467039203" duration="9000" />
-      <workItem from="1418487409082" duration="197000" />
+      <workItem from="1418487409082" duration="1619000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="100086000" />
+    <option name="totallyTimeSpent" value="101508000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -1006,7 +1037,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1018" max-vertical-offset="1921">
           <caret line="82" column="62" selection-start-line="82" selection-start-column="62" selection-end-line="82" selection-end-column="62" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#724#725#0" expanded="false" />
+            <element signature="e#764#765#0" expanded="false" />
+            <element signature="e#948#949#0" expanded="false" />
+            <element signature="e#981#982#0" expanded="false" />
+            <element signature="e#1038#1039#0" expanded="false" />
+            <element signature="e#1066#1067#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1039,8 +1078,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="476" max-vertical-offset="1496">
           <caret line="28" column="40" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
           <folding>
-            <element signature="e#3416#3417#0" expanded="true" />
-            <element signature="e#3472#3473#0" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1085,8 +1123,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="476" max-vertical-offset="1496">
           <caret line="28" column="40" selection-start-line="28" selection-start-column="40" selection-end-line="28" selection-end-column="40" />
           <folding>
-            <element signature="e#3416#3417#0" expanded="true" />
-            <element signature="e#3472#3473#0" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1224,16 +1261,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vagrant/Vagrantfile">
-      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.7" vertical-offset="737" max-vertical-offset="1649">
-          <caret line="64" column="6" selection-start-line="64" selection-start-column="6" selection-end-line="64" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/html/css/host_monitor/styles.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="4107" max-vertical-offset="5049">
@@ -1246,8 +1273,8 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="367" max-vertical-offset="1938">
           <caret line="72" column="4" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="81" />
           <folding>
-            <element signature="e#1118#1119#0" expanded="true" />
-            <element signature="e#1139#1140#0" expanded="true" />
+            <element signature="e#1118#1119#0" expanded="false" />
+            <element signature="e#1139#1140#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1273,8 +1300,7 @@
         <state vertical-scroll-proportion="0.0" vertical-offset="170" max-vertical-offset="2227">
           <caret line="41" column="3" selection-start-line="41" selection-start-column="3" selection-end-line="41" selection-end-column="3" />
           <folding>
-            <element signature="e#3416#3417#0" expanded="true" />
-            <element signature="e#3472#3473#0" expanded="true" />
+            <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1329,13 +1355,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.15060908" vertical-offset="0" max-vertical-offset="903">
-          <caret line="8" column="14" selection-start-line="8" selection-start-column="14" selection-end-line="8" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/get_ip.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.11295681" vertical-offset="0" max-vertical-offset="903">
@@ -1347,7 +1366,15 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1018" max-vertical-offset="1921">
           <caret line="82" column="62" selection-start-line="82" selection-start-column="62" selection-end-line="82" selection-end-column="62" />
-          <folding />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#724#725#0" expanded="false" />
+            <element signature="e#764#765#0" expanded="false" />
+            <element signature="e#948#949#0" expanded="false" />
+            <element signature="e#981#982#0" expanded="false" />
+            <element signature="e#1038#1039#0" expanded="false" />
+            <element signature="e#1066#1067#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1367,14 +1394,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/start_host_server.sh">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
-          <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/hostserver/Server.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="272" max-vertical-offset="6494">
@@ -1385,10 +1404,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/vagrant/Vagrantfile">
+      <provider editor-type-id="com.intellij.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.1" vertical-offset="606" max-vertical-offset="1649">
+          <caret line="57" column="54" selection-start-line="57" selection-start-column="54" selection-end-line="57" selection-end-column="54" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/setup_vagrant.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.03765227" vertical-offset="0" max-vertical-offset="903">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="187">
           <caret line="2" column="10" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/start_host_server.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="527">
+          <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.18826135" vertical-offset="0" max-vertical-offset="903">
+          <caret line="10" column="20" selection-start-line="10" selection-start-column="20" selection-end-line="10" selection-end-column="20" />
           <folding />
         </state>
       </provider>
