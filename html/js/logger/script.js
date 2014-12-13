@@ -172,6 +172,7 @@ function refresh_data_member(data) {
 
   // Add members
   var mem_list = data.member_list;
+  var mem_count = 0;
   for (var i = 0; i < mem_list.length; i++) {
     var addr = col.clone().html(mem_list[i].address);
     var beat = col.clone().html(mem_list[i].heartbeat);
@@ -184,6 +185,7 @@ function refresh_data_member(data) {
       curr_row.addClass("master");
     }
     tbody.append(curr_row);
+    mem_count++;
   }
 
   // Add time stamp
@@ -191,7 +193,8 @@ function refresh_data_member(data) {
   var d = new Date();
   var t = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
   var time = col.clone().html(t);
-  tbody.append(row.clone().append(label, time, col.clone()));
+  var num = col.clone().html(mem_count);
+  tbody.append(row.clone().append(label, time, num));
 
   // Replace existing table
   $('.members .member_table tbody').replaceWith(tbody);
