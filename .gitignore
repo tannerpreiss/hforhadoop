@@ -6,6 +6,9 @@ out
 .DS_Store
 classes
 
+.idea/workspace.xml
+
 **/__init__.py
 log-host-server.txt
 vagrant/log-frosty-*
+vagrant/.vagrant
