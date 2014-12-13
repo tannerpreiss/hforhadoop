@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -356,6 +357,11 @@ public class Server {
   }
 
   public static void main(String args[]) throws Exception {
+    // Set ipv4 stack only!
+    Properties props = System.getProperties();
+    props.setProperty("java.net.preferIPv4Stack","true");
+    System.setProperties(props);
+
     // Set status map
     status = new HashMap<String, String>();
     synchronized (status) {
